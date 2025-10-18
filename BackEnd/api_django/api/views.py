@@ -7,4 +7,13 @@ from api.views.example import (
     ClienteDetailView
 )
 
-# Create your views here.
+from api.views.denuncia import (
+    DenunciaCreateView,
+    DenunciaListView,
+    DenunciaDetailView,
+    DenunciaUpdateView,
+    DenunciaDeleteView,
+    DenunciaGeolocalizedListView,
+    DenunciaGeolocalizedDetailView,
+    DenunciaByCategoriaListView,
+)

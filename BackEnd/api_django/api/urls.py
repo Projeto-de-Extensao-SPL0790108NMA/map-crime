@@ -30,8 +30,11 @@ from api.views.denuncia import (
     DenunciaListView,
     DenunciaCreateView,
     DenunciaDetailView,
+    DenunciaGeolocalizedDetailView,
+    DenunciaGeolocalizedListView,
     DenunciaUpdateView,
     DenunciaDeleteView,
+    DenunciaByCategoriaListView,  # <-- adicionado
 )
 
 
@@ -70,4 +73,11 @@ urlpatterns = [
     path("denuncias/<int:pk>/", DenunciaDetailView.as_view(), name="denuncia_detail"),
     path("denuncias/<int:pk>/update/", DenunciaUpdateView.as_view(), name="denuncia_update"),
     path("denuncias/<int:pk>/delete/", DenunciaDeleteView.as_view(), name="denuncia_delete"),
+
+    # Mapas de denuncias geolocalizadas
+    path("denuncias/geolocalizadas/", DenunciaGeolocalizedListView.as_view(), name="denuncia_geolocalized_list"),
+    path("denuncias/geolocalizadas/<int:pk>/", DenunciaGeolocalizedDetailView.as_view(), name="denuncia_geolocalized_detail"),
+
+    # Filtrar por categoria (URL) - também funciona com ?categoria=valor na mesma view
+    path("denuncias/categoria/<str:categoria>/", DenunciaByCategoriaListView.as_view(), name="denuncia_by_categoria"),
 ]

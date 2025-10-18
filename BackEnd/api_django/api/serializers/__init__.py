@@ -32,6 +32,8 @@ from .denuncia import (
     DenunciaCreateSerializer,
     DenunciaUpdateSerializer,
     DenunciaListSerializer,
+    DenunciaGeolocalizedListSerializer,
     DenunciaDetailSerializer,
+    DenunciaGeolocalizedDetailSerializer,
     DenunciaDeleteSerializer
 )
