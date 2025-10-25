@@ -76,7 +76,7 @@ O sistema possibilita que usuários registrem ocorrências de forma anônima, qu
 
 ### 📡 **Fase 3: Recursos Avançados**
 🔲 Sistema de estatísticas e relatórios  
-🔲 Notificações em tempo real (WebSockets)  
+🔲 Notificações
 🔲 Painel administrativo (Django Admin customizado)  
 🔲 Upload seguro de mídia  
 
