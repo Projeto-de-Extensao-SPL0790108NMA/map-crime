@@ -5,10 +5,56 @@ from datetime import datetime
 from api.models import Denuncia
 from api.serializers.denuncia.heatmap import DenunciaHeatmapSerializer
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 class DenunciaHeatmapList(ListAPIView):
     serializer_class = DenunciaHeatmapSerializer
     permission_classes = [AllowAny]
     pagination_class = None
+
+    # parametros para documentação Swagger/OpenAPI
+    bbox_param = openapi.Parameter(
+        "bbox",
+        openapi.IN_QUERY,
+        description="Bounding box: minx,miny,maxx,maxy (lon,lat, EPSG:4326)",
+        type=openapi.TYPE_STRING,
+        required=False,
+    )
+    start_date_param = openapi.Parameter(
+        "start_date",
+        openapi.IN_QUERY,
+        description="Data inicial (ISO-8601). Ex: 2025-10-01T00:00:00",
+        type=openapi.TYPE_STRING,
+        format=openapi.FORMAT_DATETIME,
+        required=False,
+    )
+    end_date_param = openapi.Parameter(
+        "end_date",
+        openapi.IN_QUERY,
+        description="Data final (ISO-8601). Ex: 2025-10-31T23:59:59",
+        type=openapi.TYPE_STRING,
+        format=openapi.FORMAT_DATETIME,
+        required=False,
+    )
+    limit_param = openapi.Parameter(
+        "limit",
+        openapi.IN_QUERY,
+        description="Limita número de pontos retornados",
+        type=openapi.TYPE_INTEGER,
+        required=False,
+    )
+
+    @swagger_auto_schema(
+        tags=["Heatmap"],
+        operation_description="Retorna lista leve de pontos para construir heatmap. Suporta filtros: bbox, start_date, end_date e limit.",
+        manual_parameters=[bbox_param, start_date_param, end_date_param, limit_param],
+        responses={200: DenunciaHeatmapSerializer(many=True)},
+        operation_id="denuncia_heatmap_list",
+    )
+    def get(self, request, *args, **kwargs):
+        """Rota GET documentada para retornar pontos do heatmap."""
+        return super().get(request, *args, **kwargs)
 
     def parse_date(self, s):
         try:
