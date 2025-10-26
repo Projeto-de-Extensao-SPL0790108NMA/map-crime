@@ -15,7 +15,6 @@ __localcode
 /data/
 /api_django/staticfiles/*
 
-
 # Distribution / packaging
 .Python
 build/
