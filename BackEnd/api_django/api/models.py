@@ -1,22 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models as geomodels
-import choice 
+from . import choice 
 import uuid
 import os
-
-# Create your models here.
-class CustomUser(AbstractUser):
-    # seus campos extras, se houver
-    pass
-
-class Example(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    def __str__(self):
-        return self.name
 
 def denuncia_midia_upload_path(instance, filename):
     ext = filename.split('.')[-1]

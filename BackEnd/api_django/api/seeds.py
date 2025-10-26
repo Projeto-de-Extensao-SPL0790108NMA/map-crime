@@ -11,13 +11,6 @@ def run():
             "superuser": True
         },
         {
-            "username": "example",
-            "email": "example@example.com",
-            "password": "example123",
-            "grupo": "Example",
-            "superuser": False
-        },
-        {
             "username": "user",
             "email": "user@example.com",
             "password": "user123",

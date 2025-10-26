@@ -114,7 +114,7 @@ pnpm dev
 
 A aplicação estará disponível em:  
 🖥️ `http://localhost:5173` (Frontend)  
-⚙️ `http://localhost:8000/api` (Backend)
+⚙️ `http://localhost:8000` (Backend)
 
 ---
 
@@ -226,7 +226,7 @@ Users can anonymously report incidents, which are processed and displayed on an 
 
 ### Phase 3 – Advanced Features ⏳  
 - Reports and analytics  
-- Real-time notifications  
+- notifications  
 - Admin dashboard  
 - Secure media uploads  
 

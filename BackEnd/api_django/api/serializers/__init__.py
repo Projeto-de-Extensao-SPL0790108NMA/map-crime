@@ -1,13 +1,5 @@
 # api/serializers/__init__.py
 
-from .example import (
-    ExampleCreateSerializer,
-    ExampleUpdateSerializer,
-    ExampleListSerializer,
-    ExampleDetailSerializer,
-    ExampleDeleteSerializer
-)
-
 from .user import (
     UserCreateSerializer,
     UserUpdateSerializer,
@@ -24,14 +16,11 @@ from .group import (
     GroupDeleteSerializer
 )
 
-from .auth import (
-    TokenObtainPairWithCaptchaSerializer,
-)
-
+# Expondo também os serializers de Denuncia para importação direta via `from api.serializers import ...`
 from .denuncia import (
     DenunciaCreateSerializer,
     DenunciaUpdateSerializer,
     DenunciaListSerializer,
     DenunciaDetailSerializer,
-    DenunciaDeleteSerializer
+    DenunciaDeleteSerializer,
 )

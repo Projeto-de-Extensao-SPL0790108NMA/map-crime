@@ -6,7 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 
 # autenticated
 from rest_framework.permissions import IsAuthenticated
-from api.permissions.grupos import IsAdmin, IsUser, IsExample
+from accounts.permissions.groups import IsAdmin, IsUser
 
 # from drf_yasg.utils import swagger_auto_schema
 from drf_yasg.utils import swagger_auto_schema
@@ -21,10 +21,11 @@ class DenunciaListView(ListAPIView):
     """Lista todos os registros de Denuncia."""
     queryset = Denuncia.objects.all()
     serializer_class = DenunciaListSerializer
-    permission_classes = [IsAuthenticated, IsAdmin | IsUser | IsExample]
+    permission_classes = [IsAuthenticated, IsAdmin | IsUser]
     pagination_class = CustomPagination  # 👈 Aqui tá a mágica
 
     @swagger_auto_schema(
+        tags=["Denuncias"],
         operation_description="Lista todos os registros de Denuncia.",
         responses={200: DenunciaListSerializer(many=True)},
         operation_id="denuncia_list",

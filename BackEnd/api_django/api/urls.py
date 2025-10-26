@@ -1,17 +1,5 @@
 from django.urls import path
-from .views.auth.google_login import GoogleLoginView
-from api.views.auth.token_with_captcha import TokenObtainPairWithCaptchaView
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-from api.views.example import (
-    ExampleListView,
-    ExampleCreateView,
-    ExampleDetailView,
-    ExampleUpdateView,
-    ExampleDeleteView,
-)
+
 from api.views.user import (
     UserListView,
     UserCreateView,
@@ -26,6 +14,7 @@ from api.views.group import (
     GroupUpdateView,
     GroupDeleteView,
 )
+
 from api.views.denuncia import (
     DenunciaListView,
     DenunciaCreateView,
@@ -33,23 +22,9 @@ from api.views.denuncia import (
     DenunciaUpdateView,
     DenunciaDeleteView,
 )
-
+from api.views.denuncia.heatmap import DenunciaHeatmapList
 
 urlpatterns = [
-    # Rota para obter o token (login)
-    path('token/captcha/', TokenObtainPairWithCaptchaView.as_view(), name='token_obtain_pair'),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain'),
-    path('token/google/', GoogleLoginView.as_view(), name='google-login'),
-    # Rota para renovar o token
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
-    # Exemplos de CRUD
-    path("examples/", ExampleListView.as_view(), name="example-list"),
-    path("examples/create/", ExampleCreateView.as_view(), name="example-create"),
-    path("examples/<int:pk>/", ExampleDetailView.as_view(), name="example-detail"),
-    path("examples/<int:pk>/update/", ExampleUpdateView.as_view(), name="example-update"),
-    path("examples/<int:pk>/delete/", ExampleDeleteView.as_view(), name="example-delete"),
-
     # Users
     path("users/", UserListView.as_view(), name="user-list"),
     path("users/create/", UserCreateView.as_view(), name="user-create"),
@@ -57,7 +32,7 @@ urlpatterns = [
     path("users/<int:pk>/update/", UserUpdateView.as_view(), name="user-update"),
     path("users/<int:pk>/delete/", UserDeleteView.as_view(), name="user-delete"),
 
-    # Groups
+    # Groups (paths distintos para evitar sobrescrita)
     path("groups/", GroupListView.as_view(), name="group-list"),
     path("groups/create/", GroupCreateView.as_view(), name="group-create"),
     path("groups/<int:pk>/", GroupDetailView.as_view(), name="group-detail"),
@@ -70,4 +45,5 @@ urlpatterns = [
     path("denuncias/<int:pk>/", DenunciaDetailView.as_view(), name="denuncia_detail"),
     path("denuncias/<int:pk>/update/", DenunciaUpdateView.as_view(), name="denuncia_update"),
     path("denuncias/<int:pk>/delete/", DenunciaDeleteView.as_view(), name="denuncia_delete"),
+    path("denuncias/heatmap/", DenunciaHeatmapList.as_view(), name="denuncia-heatmap"),
 ]
