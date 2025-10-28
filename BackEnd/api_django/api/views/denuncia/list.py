@@ -1,5 +1,3 @@
-from datetime import datetime, time
-
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
 from rest_framework.exceptions import ValidationError
@@ -33,6 +31,13 @@ class DenunciaListView(ListAPIView):
         type=openapi.TYPE_STRING,
         required=False,
     )
+    categoria_param = openapi.Parameter(
+        "categoria",
+        openapi.IN_QUERY,
+        description="Filtra denúncias pela categoria (correspondência exata, case-insensitive).",
+        type=openapi.TYPE_STRING,
+        required=False,
+    )
     created_from_param = openapi.Parameter(
         "created_from",
         openapi.IN_QUERY,
@@ -55,7 +60,7 @@ class DenunciaListView(ListAPIView):
         operation_description="Lista todos os registros de Denuncia.",
         responses={200: DenunciaListSerializer(many=True)},
         operation_id="denuncia_list",
-        manual_parameters=[status_param, created_from_param, created_to_param],
+        manual_parameters=[status_param, categoria_param, created_from_param, created_to_param],
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -67,33 +72,46 @@ class DenunciaListView(ListAPIView):
         if status_value:
             queryset = queryset.filter(status=status_value)
 
+        categoria_value = self.request.query_params.get("categoria")
+        if categoria_value:
+            queryset = queryset.filter(categoria__iexact=categoria_value)
+
         created_from_raw = self.request.query_params.get("created_from")
         created_to_raw = self.request.query_params.get("created_to")
 
         if created_from_raw:
-            queryset = queryset.filter(
-                created_at__gte=self._parse_datetime_param(created_from_raw, "created_from")
+            created_from_value, value_type = self._parse_datetime_param(
+                created_from_raw, "created_from"
             )
+            if value_type == "datetime":
+                queryset = queryset.filter(created_at__gte=created_from_value)
+            else:
+                queryset = queryset.filter(created_at__date__gte=created_from_value)
         if created_to_raw:
-            queryset = queryset.filter(
-                created_at__lte=self._parse_datetime_param(created_to_raw, "created_to", is_end=True)
+            created_to_value, value_type = self._parse_datetime_param(
+                created_to_raw, "created_to"
             )
+            if value_type == "datetime":
+                queryset = queryset.filter(created_at__lte=created_to_value)
+            else:
+                queryset = queryset.filter(created_at__date__lte=created_to_value)
 
         return queryset
 
-    def _parse_datetime_param(self, raw_value, param_name, is_end=False):
-        """Aceita data ou datetime e garante retorno timezone-aware."""
-        parsed = parse_datetime(raw_value)
-        if not parsed:
-            day = parse_date(raw_value)
-            if day:
-                parsed = datetime.combine(day, time.max if is_end else time.min)
-        if not parsed:
-            raise ValidationError(
-                {
-                    param_name: "Formato inválido. Use ISO-8601 (YYYY-MM-DD ou YYYY-MM-DDThh:mm:ss)."
-                }
-            )
-        if timezone.is_naive(parsed):
-            parsed = timezone.make_aware(parsed, timezone.get_current_timezone())
-        return parsed
+    def _parse_datetime_param(self, raw_value, param_name):
+        """Retorna tupla com valor parseado e tipo ('datetime' ou 'date')."""
+        parsed_dt = parse_datetime(raw_value)
+        if parsed_dt:
+            if timezone.is_naive(parsed_dt):
+                parsed_dt = timezone.make_aware(parsed_dt, timezone.get_current_timezone())
+            return parsed_dt, "datetime"
+
+        day = parse_date(raw_value)
+        if day:
+            return day, "date"
+
+        raise ValidationError(
+            {
+                param_name: "Formato inválido. Use ISO-8601 (YYYY-MM-DD ou YYYY-MM-DDThh:mm:ss)."
+            }
+        )

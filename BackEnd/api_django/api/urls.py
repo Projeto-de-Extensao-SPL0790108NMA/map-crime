@@ -42,8 +42,8 @@ urlpatterns = [
     # Denuncias
     path("denuncias/", DenunciaListView.as_view(), name="denuncia_list"),
     path("denuncias/create/", DenunciaCreateView.as_view(), name="denuncia_create"),
-    path("denuncias/<int:pk>/", DenunciaDetailView.as_view(), name="denuncia_detail"),
-    path("denuncias/<int:pk>/update/", DenunciaUpdateView.as_view(), name="denuncia_update"),
-    path("denuncias/<int:pk>/delete/", DenunciaDeleteView.as_view(), name="denuncia_delete"),
+    path("denuncias/<uuid:pk>/", DenunciaDetailView.as_view(), name="denuncia_detail"),
+    path("denuncias/<uuid:pk>/update/", DenunciaUpdateView.as_view(), name="denuncia_update"),
+    path("denuncias/<uuid:pk>/delete/", DenunciaDeleteView.as_view(), name="denuncia_delete"),
     path("denuncias/heatmap/", DenunciaHeatmapList.as_view(), name="denuncia-heatmap"),
 ]
