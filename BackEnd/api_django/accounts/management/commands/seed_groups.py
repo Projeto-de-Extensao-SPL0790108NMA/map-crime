@@ -2,10 +2,10 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group
 
 class Command(BaseCommand):
-    help = "Cria grupos padrão: Admin, User, Example"
+    help = "Cria grupos padrão: Admin, User"
 
     def handle(self, *args, **options):
-        groups = ['Admin', 'User', 'Example']
+        groups = ['Admin', 'User']
         for g in groups:
             group, created = Group.objects.get_or_create(name=g)
             if created:

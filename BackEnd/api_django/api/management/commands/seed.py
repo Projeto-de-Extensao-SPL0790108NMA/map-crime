@@ -10,6 +10,7 @@ class Command(BaseCommand):
             call_command('seed_groups')
             # cria usuários via accounts
             call_command('seed_users')
+            call_command('seed_denuncias', total=200)
             self.stdout.write(self.style.SUCCESS('Dados carregados com sucesso!'))
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Erro ao carregar dados: {e}'))
