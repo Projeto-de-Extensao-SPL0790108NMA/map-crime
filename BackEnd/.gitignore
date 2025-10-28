@@ -18,6 +18,8 @@ staticfiles/
 .env
 *.env
 venv/
+denuncias_midias/
+denuncias_audios/
 # Distribution / packaging
 .Python
 build/
