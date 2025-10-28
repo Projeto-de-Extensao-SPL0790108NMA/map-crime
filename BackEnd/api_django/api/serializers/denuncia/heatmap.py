@@ -2,7 +2,7 @@ from rest_framework import serializers
 from api.models import Denuncia
 
 class DenunciaHeatmapSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
+    categoria = serializers.SerializerMethodField()
     lat = serializers.SerializerMethodField()
     lng = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
@@ -10,10 +10,10 @@ class DenunciaHeatmapSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Denuncia
-        fields = ("id", "name", "lat", "lng", "date", "weight")
+        fields = ("id", "categoria", "lat", "lng", "date", "weight")
 
-    def get_name(self, obj):
-        return getattr(obj, "nome", getattr(obj, "titulo", ""))
+    def get_categoria(self, obj):
+        return getattr(obj, "categoria", "")
 
     def get_lat(self, obj):
         loc = getattr(obj, "localizacao", None)
