@@ -110,12 +110,12 @@ docker-deps-up:
 	count=0; \
 	while ! $(DC) exec -T psql sh -c "psql -U $${POSTGRES_USER} -d $${POSTGRES_DB} -c '\q'" >/dev/null 2>&1; do \
 		count=$$((count+1)); \
-		if [ $$count -gt 10 ]; then \
+		if [ $$count -gt 30 ]; then \
 			echo '❌ PostgreSQL falhou em iniciar após 30 segundos.'; \
 			echo 'Verifique o .env e os logs: $(DC) logs psql'; \
 			exit 1; \
 		fi; \
-		echo "  (tentativa $$count/10) Aguardando..."; \
+		echo "  (tentativa $$count/30) Aguardando..."; \
 		sleep 1; \
 	done; \
 	echo "✅ PostgreSQL está pronto para conexões!"
