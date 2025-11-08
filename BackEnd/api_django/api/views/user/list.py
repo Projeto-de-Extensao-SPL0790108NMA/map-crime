@@ -20,10 +20,10 @@ class CustomPagination(PageNumberPagination):
 
 class UserListView(ListAPIView):
     """Lista todos os registros de User."""
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('email')  # Ordena por email (alfabético)
     serializer_class = UserListSerializer
     permission_classes = [IsAuthenticated, IsAdmin | IsUser]
-    pagination_class = CustomPagination  # 👈 Aqui tá a mágica
+    pagination_class = CustomPagination
 
     @swagger_auto_schema(
         tags=["Users"],
