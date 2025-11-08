@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.gis.geos import Point
 from api.models import Denuncia
+from .utils import enforce_file_upload_limit
+
 
 class DenunciaCreateSerializer(serializers.ModelSerializer):
     latitude = serializers.FloatField(write_only=True, required=True)
@@ -36,6 +38,10 @@ class DenunciaCreateSerializer(serializers.ModelSerializer):
         if not -180 <= value <= 180:
             raise serializers.ValidationError("Longitude deve estar entre -180 e 180 graus.")
         return value
+
+    def validate(self, attrs):
+        enforce_file_upload_limit(self)
+        return super().validate(attrs)
 
     def create(self, validated_data):
         lat = validated_data.pop("latitude")

@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 from api.models import Denuncia
 from accounts.permissions.groups import IsAdmin
+from .utils import enforce_file_upload_limit
 
 class DenunciaUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,6 +14,10 @@ class DenunciaUpdateSerializer(serializers.ModelSerializer):
             "localizacao", "midia", "audio", "status", "created_at", "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at", "protocolo", "localizacao"]
+
+    def validate(self, attrs):
+        enforce_file_upload_limit(self)
+        return super().validate(attrs)
     
     def update(self, instance, validated_data):
         request = self.context.get("request")
