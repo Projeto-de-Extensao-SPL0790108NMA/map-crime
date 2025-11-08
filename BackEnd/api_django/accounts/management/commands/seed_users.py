@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 class Command(BaseCommand):
-    help = "Cria usuários padrão e associa aos grupos (Admin, User, Example)"
+    help = "Cria usuários padrão e associa aos grupos (Admin, User)"
 
     def handle(self, *args, **options):
         User = get_user_model()
@@ -11,7 +11,6 @@ class Command(BaseCommand):
 
         usuarios = [
             {"email": "admin@example.com", "password": "admin123", "grupo": "Admin", "superuser": True},
-            {"email": "example@example.com", "password": "example123", "grupo": "Example", "superuser": False},
             {"email": "user@example.com", "password": "user123", "grupo": "User", "superuser": False},
         ]
 
