@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.gis.db import models as geomodels
-from . import choice 
+from . import choice
+from accounts.models import User
 import uuid
+import ulid
 import os
 
 def denuncia_midia_upload_path(instance, filename):
@@ -14,8 +16,13 @@ def denuncia_audio_upload_path(instance, filename):
     filename = f"{instance.id}.{ext}"
     return os.path.join('denuncias_audios', filename)
 
+def ulid_str():
+    return str(ulid.new())
+    
 class Denuncia(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=True, blank=True)
+    protocolo = models.CharField(max_length=26, unique=True, default=ulid_str, editable=False, db_index=True)
     categoria = models.CharField(max_length=100)
     descricao = models.TextField(max_length=1000)
     localizacao = geomodels.PointField()

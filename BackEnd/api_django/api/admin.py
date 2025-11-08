@@ -10,6 +10,8 @@ class DenunciaAdmin(admin.ModelAdmin):
     # Campos exibidos na listagem
     list_display = (
         'id_truncado',
+        'protocolo',
+        'usuario',
         'categoria',
         'status_colored',
         'localizacao_display',
@@ -23,6 +25,7 @@ class DenunciaAdmin(admin.ModelAdmin):
     list_filter = (
         'status',
         'categoria',
+        'usuario',
         'created_at',
         'updated_at',
     )
@@ -30,8 +33,11 @@ class DenunciaAdmin(admin.ModelAdmin):
     # Campos de busca
     search_fields = (
         'id',
+        'protocolo',
         'categoria',
         'descricao',
+        'usuario__email',
+        'usuario__name',
     )
     
     # Ordenação padrão
@@ -40,6 +46,7 @@ class DenunciaAdmin(admin.ModelAdmin):
     # Campos somente leitura
     readonly_fields = (
         'id',
+        'protocolo',
         'created_at',
         'updated_at',
         'localizacao_display',
@@ -50,7 +57,7 @@ class DenunciaAdmin(admin.ModelAdmin):
     # Organização dos campos no formulário de edição
     fieldsets = (
         ('Informações Básicas', {
-            'fields': ('id', 'categoria', 'status')
+            'fields': ('id', 'protocolo', 'usuario', 'categoria', 'status')
         }),
         ('Descrição', {
             'fields': ('descricao',),

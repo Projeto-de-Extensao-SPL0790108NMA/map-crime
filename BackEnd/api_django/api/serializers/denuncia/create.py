@@ -11,6 +11,8 @@ class DenunciaCreateSerializer(serializers.ModelSerializer):
         model = Denuncia
         fields = [
             "id",
+            "protocolo",
+            "usuario",
             "categoria",
             "descricao",
             "localizacao",
@@ -22,7 +24,7 @@ class DenunciaCreateSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at", "localizacao"]
+        read_only_fields = ["id", "created_at", "updated_at", "localizacao", "protocolo", "usuario"]
 
     def create(self, validated_data):
         lat = validated_data.pop("latitude")

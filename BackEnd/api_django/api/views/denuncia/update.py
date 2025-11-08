@@ -13,7 +13,7 @@ class DenunciaUpdateView(UpdateAPIView):
     """Atualiza um registro existente de Denuncia."""
     queryset = Denuncia.objects.all()
     serializer_class = DenunciaUpdateSerializer
-    permission_classes = [IsAuthenticated, IsAdmin | IsUser]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
         tags=["Denuncias"],
