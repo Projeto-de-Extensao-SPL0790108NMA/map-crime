@@ -214,6 +214,10 @@ SWAGGER_SETTINGS = {
     'DEFAULT_MODEL_RENDERER': 'rest_framework.renderers.BrowsableAPIRenderer',
 }
 
+# Configuração para silenciar aviso de depreciação do drf-yasg
+# Remove o prefixo '.' dos formatos dos renderizadores (comportamento novo)
+SWAGGER_USE_COMPAT_RENDERERS = False
+
 # Nome do projeto usado em QR/issuer etc (lido do .env)
 PROJECT_NAME = os.getenv('PROJECT_NAME', os.getenv('APP_NAME', 'Base_Project'))
 
