@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { UserPlus, Search, Pencil, Trash2 } from "lucide-react";
+import { createFileRoute } from '@tanstack/react-router';
+import { useState } from 'react';
+import { Pencil, Search, Trash2, UserPlus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 
-export const Route = createFileRoute("/admin/_auth/users")({
+export const Route = createFileRoute('/admin/_auth/users')({
   component: Users,
 });
 
@@ -14,29 +14,29 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "usuario";
-  status: "ativo" | "inativo";
+  role: 'admin' | 'usuario';
+  status: 'ativo' | 'inativo';
   createdAt: string;
 }
 
-// Gera 25 usuários mockados (com um admin extra no final)
-const mockUsers: User[] = Array.from({ length: 25 }, (_, i) => ({
+
+const mockUsers: Array<User> = Array.from({ length: 25 }, (_, i) => ({
   id: String(i + 1),
   name: `Usuário ${i + 1}`,
   email: `usuario${i + 1}@email.com`,
-  role: i === 24 ? "admin" : i % 2 === 0 ? "admin" : "usuario",
-  status: "ativo",
-  createdAt: `${String(i + 8).padStart(2, "0")}/06/2025`,
+  role: i === 24 ? 'admin' : i % 2 === 0 ? 'admin' : 'usuario',
+  status: 'ativo',
+  createdAt: `${String(i + 8).padStart(2, '0')}/06/2025`,
 }));
 
 function Users() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [users] = useState<User[]>(mockUsers);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [users] = useState<Array<User>>(mockUsers);
 
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -89,12 +89,12 @@ function Users() {
                           {user.name}
                         </h3>
 
-                        {user.role === "admin" && (
+                        {user.role === 'admin' && (
                           <Badge className="bg-gray-200 text-gray-700 hover:bg-gray-200">
                             Admin
                           </Badge>
                         )}
-                        {user.role === "usuario" && (
+                        {user.role === 'usuario' && (
                           <Badge
                             variant="outline"
                             className="text-muted-foreground"
@@ -102,7 +102,7 @@ function Users() {
                             Usuário
                           </Badge>
                         )}
-                        {user.status === "ativo" && (
+                        {user.status === 'ativo' && (
                           <Badge
                             variant="outline"
                             className="border-green-600 text-green-700 bg-green-50"
