@@ -21,6 +21,7 @@ from api.views.denuncia import (
     DenunciaDetailView,
     DenunciaUpdateView,
     DenunciaDeleteView,
+    DenunciaReportView,
 )
 from api.views.denuncia.heatmap import DenunciaHeatmapList
 
@@ -46,4 +47,5 @@ urlpatterns = [
     path("denuncias/<uuid:pk>/update/", DenunciaUpdateView.as_view(), name="denuncia_update"),
     path("denuncias/<uuid:pk>/delete/", DenunciaDeleteView.as_view(), name="denuncia_delete"),
     path("denuncias/heatmap/", DenunciaHeatmapList.as_view(), name="denuncia-heatmap"),
+    path("denuncias/relatorios/", DenunciaReportView.as_view(), name="denuncia-report"),
 ]
