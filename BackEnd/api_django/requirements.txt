@@ -65,3 +65,4 @@ pyotp>=2.8.0
 qrcode>=7.3
 Pillow>=10.0.0
 whitenoise
+ulid-py
