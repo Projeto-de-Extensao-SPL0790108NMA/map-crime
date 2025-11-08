@@ -19,10 +19,10 @@ class CustomPagination(PageNumberPagination):
 
 class DenunciaListView(ListAPIView):
     """Lista todos os registros de Denuncia."""
-    queryset = Denuncia.objects.all()
+    queryset = Denuncia.objects.all().order_by('-created_at')  # Ordena por data de criação (mais recente primeiro)
     serializer_class = DenunciaListSerializer
     permission_classes = [IsAuthenticated, IsAdmin | IsUser]
-    pagination_class = CustomPagination  # 👈 Aqui tá a mágica
+    pagination_class = CustomPagination
 
     status_param = openapi.Parameter(
         "status",
@@ -66,7 +66,7 @@ class DenunciaListView(ListAPIView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset()  # Já vem ordenado por '-created_at'
 
         status_value = self.request.query_params.get("status")
         if status_value:
@@ -96,7 +96,7 @@ class DenunciaListView(ListAPIView):
             else:
                 queryset = queryset.filter(created_at__date__lte=created_to_value)
 
-        return queryset
+        return queryset.order_by('-created_at')  # Garante ordenação mesmo após filtros
 
     def _parse_datetime_param(self, raw_value, param_name):
         """Retorna tupla com valor parseado e tipo ('datetime' ou 'date')."""
