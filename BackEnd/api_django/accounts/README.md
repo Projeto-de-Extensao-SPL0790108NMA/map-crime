@@ -11,7 +11,7 @@ Este pacote contém um app Django chamado `accounts` com:
 - 2FA (TOTP) endpoints: enable e verify, com QR gerado em base64.
 - Logout que faz blacklist do refresh token (SimpleJWT).
 - Templates de email em `accounts/templates/accounts/emails/`.
-- Permissões por grupo (Admin, User, Example) em `accounts/permissions/groups.py`.
+- Permissões por grupo (Admin, User) em `accounts/permissions/groups.py`.
 - Testes usando pytest em `accounts/tests/`.
 
 Como usar
