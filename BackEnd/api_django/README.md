@@ -54,14 +54,6 @@ Autenticação
 - POST  /api/token/google/        — Login via Google (GoogleLoginView)
 - POST  /api/token/refresh/       — Renovar token (TokenRefreshView)
 
-Examples (CRUD)
-- GET   /api/examples/                  — Listar exemplos (ExampleListView)
-- POST  /api/examples/create/           — Criar exemplo (ExampleCreateView)
-- GET   /api/examples/{pk}/             — Detalhar exemplo (ExampleDetailView)
-- PUT   /api/examples/{pk}/update/      — Atualizar exemplo (ExampleUpdateView)
-- PATCH /api/examples/{pk}/update/      — Atualizar parcialmente (se implementado)
-- DELETE /api/examples/{pk}/delete/     — Deletar exemplo (ExampleDeleteView)
-
 Users (CRUD)
 - GET   /api/users/                     — Listar usuários (UserListView)
 - POST  /api/users/create/              — Criar usuário (UserCreateView)
