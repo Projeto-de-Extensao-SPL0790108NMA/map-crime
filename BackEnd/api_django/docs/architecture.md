@@ -4,7 +4,7 @@ Apps principais
 - accounts — autenticação customizada
   - CustomUser com `email` como `USERNAME_FIELD`, campos: `is_social_account`, `totp_secret`, `name`, etc.
   - SocialAccount, password reset, 2FA (TOTP), logout com blacklist (SimpleJWT).
-- api — endpoints CRUD (users, groups, examples).
+- api — endpoints CRUD (users, groups, denuncias).
 - core — settings, urls, asgi/wsgi.
 
 Fluxo de autenticação (resumido)
