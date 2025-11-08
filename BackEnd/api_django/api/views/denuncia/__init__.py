@@ -5,6 +5,7 @@ from .list import DenunciaListView
 from .detail import DenunciaDetailView
 from .update import DenunciaUpdateView
 from .delete import DenunciaDeleteView
+from .report import DenunciaReportView
 
 __all__ = [
     "DenunciaCreateView",
@@ -12,4 +13,5 @@ __all__ = [
     "DenunciaDetailView",
     "DenunciaUpdateView",
     "DenunciaDeleteView",
+    "DenunciaReportView",
 ]
