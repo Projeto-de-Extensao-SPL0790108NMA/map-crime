@@ -1,6 +1,6 @@
 from rest_framework.generics import ListAPIView
 from django.contrib.auth.models import Group
-from api.serializers.group import GroupDeleteSerializer
+from api.serializers.group import GroupListSerializer  # Corrigido: usar GroupListSerializer
 # paginations
 from rest_framework.pagination import PageNumberPagination
 
@@ -19,15 +19,15 @@ class CustomPagination(PageNumberPagination):
 
 class GroupListView(ListAPIView):
     """Lista todos os registros de Group."""
-    queryset = Group.objects.all()
-    serializer_class = GroupDeleteSerializer
+    queryset = Group.objects.all().order_by('name')  # Ordena por nome (alfabético)
+    serializer_class = GroupListSerializer  # Corrigido: usar GroupListSerializer em vez de GroupDeleteSerializer
     permission_classes = [IsAuthenticated, IsAdmin | IsUser]
-    pagination_class = CustomPagination  # 👈 Aqui tá a mágica
+    pagination_class = CustomPagination
 
     @swagger_auto_schema(
         tags=["Groups"],
         operation_description="Lista todos os registros de Group.",
-        responses={200: GroupDeleteSerializer(many=True)},
+        responses={200: GroupListSerializer(many=True)},
         operation_id="group_list",
     )
     def get(self, request, *args, **kwargs):
