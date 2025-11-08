@@ -3,7 +3,7 @@ from api.models import Denuncia
 from api.serializers import DenunciaCreateSerializer
 
 from rest_framework.permissions import AllowAny
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -12,7 +12,7 @@ class DenunciaCreateView(CreateAPIView):
     queryset = Denuncia.objects.all()
     serializer_class = DenunciaCreateSerializer
     permission_classes = [AllowAny]
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]  # Aceita JSON e form-data
 
     @swagger_auto_schema(
         tags=["Denuncias"],
@@ -26,7 +26,7 @@ class DenunciaCreateView(CreateAPIView):
             openapi.Parameter("audio", openapi.IN_FORM, description="Audio (arquivo)", type=openapi.TYPE_FILE, required=False),
             openapi.Parameter("status", openapi.IN_FORM, description="Status", type=openapi.TYPE_STRING, required=False),
         ],
-        consumes=["multipart/form-data"],
+        consumes=["multipart/form-data", "application/json"],
         responses={201: DenunciaCreateSerializer()},
         operation_id="denuncia_create",
     )
