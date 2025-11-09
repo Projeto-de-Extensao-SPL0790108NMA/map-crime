@@ -15,24 +15,22 @@ jobs:
           POSTGRES_DB: mapcrime
           POSTGRES_USER: mapcrime
           POSTGRES_PASSWORD: mapcrime
-        # Em GitHub Actions, conecte via hostname do serviço (sem mapear portas)
+        ports:
+          - 5432:5432  # <- publica a porta para o host do runner
         options: >-
           --health-cmd "pg_isready -U mapcrime -d mapcrime"
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
 
     env:
-      # Variáveis usadas pelo Django/settings
       POSTGRES_DB: mapcrime
       POSTGRES_USER: mapcrime
       POSTGRES_PASSWORD: mapcrime
-      POSTGRES_HOST: postgres        # <— usa o nome do serviço
+      POSTGRES_HOST: 127.0.0.1   # <- conecta no host do runner
       POSTGRES_PORT: 5432
       DB_ENGINE: django.contrib.gis.db.backends.postgis
       DJANGO_SETTINGS_MODULE: core.settings
-
-      # Opcionais (evita falha caso seu settings exija)
       SECRET_KEY: test-ci-secret
       DEBUG: "1"
 
@@ -60,15 +58,21 @@ jobs:
 
       - name: Wait for database to be ready
         run: |
-          for i in {1..30}; do
+          for i in {1..60}; do
             if pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -d "$POSTGRES_DB" -U "$POSTGRES_USER"; then
               exit 0
             fi
-            echo "Waiting for Postgres ($i/30)..."
+            echo "Waiting for Postgres ($i/60)..."
             sleep 2
           done
           echo "Database did not become ready in time"
           exit 1
+        env:
+          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
+
+      - name: Smoke test DB (opcional)
+        run: |
+          psql "host=$POSTGRES_HOST port=$POSTGRES_PORT dbname=$POSTGRES_DB user=$POSTGRES_USER" -c "SELECT version();"
         env:
           PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
 
@@ -84,14 +88,8 @@ jobs:
         working-directory: BackEnd/api_django
         run: pytest
 
-      # Opcional: ajuda na depuração se algo falhar
       - name: Print Postgres logs (on failure)
         if: failure()
         run: |
-          docker ps -a
-          # Tenta encontrar e imprimir logs do serviço postgres
           CID=$(docker ps -a --filter "ancestor=postgis/postgis:15-3.3" --format "{{.ID}}" | head -n1 || true)
-          if [ -n "$CID" ]; then
-            echo "== Container $CID logs =="
-            docker logs "$CID" || true
-          fi
+          if [ -n "$CID" ]; then docker logs "$CID" || true; fi
