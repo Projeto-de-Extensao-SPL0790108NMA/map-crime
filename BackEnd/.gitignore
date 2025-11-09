@@ -20,7 +20,7 @@ staticfiles/
 venv/
 denuncias_midias/*
 denuncias_audios/*
-testes/
+
 # Distribution / packaging
 .Python
 build/
