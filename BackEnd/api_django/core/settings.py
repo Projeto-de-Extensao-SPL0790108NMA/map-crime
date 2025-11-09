@@ -49,8 +49,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'your-default-secret-key')
 # DEBUG: aceita "1","0","True","False"
 DEBUG_RAW = os.getenv('DEBUG', '1')
 DEBUG = DEBUG_RAW.lower() in ('1', 'true', 'yes', 'on')
-# CSRF_TRUSTED_ORIGINS: aceita lista separada por vírgula
-_csrf = os.getenv('CSRF_TRUSTED_ORIGINS', '*')
+# CSRF_TRUSTED_ORIGINS: aceita lista separada por vírgula (precisa de esquema em Django 4+)
+_csrf_default = 'http://localhost,http://127.0.0.1'
+_csrf = os.getenv('CSRF_TRUSTED_ORIGINS', _csrf_default)
 CSRF_TRUSTED_ORIGINS = [h.strip() for h in _csrf.split(',') if h.strip()]
 
 # ALLOWED_HOSTS: aceita lista separada por vírgula
