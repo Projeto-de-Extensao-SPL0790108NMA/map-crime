@@ -144,8 +144,12 @@ else:
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
+STATIC_DIR = BASE_DIR / 'static'
+# Garantimos que a pasta configurada existe para evitar avisos do check
+STATIC_DIR.mkdir(parents=True, exist_ok=True)
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    STATIC_DIR,
 ]
 
 # Diretório onde collectstatic grava arquivos estáticos
