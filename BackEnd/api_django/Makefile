@@ -39,6 +39,7 @@ help:
 	@echo "  make run-dev     -> [Recomendado] Sobe DB/Redis (Docker), espera o DB, e roda a app localmente (venv)"
 	@echo "  make run-test    -> Roda os testes (pytest) no ambiente local (venv)"
 	@echo "  make lint        -> Executa Ruff (lint) em todo o projeto"
+	@echo "  make lint-fix    -> Executa Ruff com --fix para corrigir problemas simples"
 	@echo "  make clean       -> Remove o ambiente virtual local (./venv)"
 	@echo "  make gen-secret  -> Gera e IMPRIME um SECRET_KEY novo no terminal"
 	@echo ""
@@ -65,7 +66,6 @@ run-dev: venv docker-deps-up
 	if [ -f $(ENV_FILE) ]; then . $(ENV_FILE); fi; \
 	set +o allexport; \
 	\
-	$(MANAGE) makemigrations accounts --noinput; \
 	$(MANAGE) makemigrations --noinput; \
 	$(MANAGE) migrate --noinput; \
 	$(MANAGE) collectstatic --noinput; \
@@ -85,6 +85,9 @@ run-test: venv
 
 lint: venv
 	$(VENV)/bin/ruff check .
+
+lint-fix: venv
+	$(VENV)/bin/ruff check . --fix
 
 clean:
 	rm -rf $(VENV)
