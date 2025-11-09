@@ -29,7 +29,8 @@ class Command(BaseCommand):
             "Furto", "Roubo", "Vandalismo", "Violência", "Tráfico",
             "Perturbação", "Depredação", "Briga", "Fraude", "Outros"
         ]
-        status_choices = [item[0] for item in choice.STATUS_CHOICES]
+        status_source = getattr(choice.STATUS_CHOICES, "choices", choice.STATUS_CHOICES)
+        status_choices = [item[0] for item in status_source]
         agora = timezone.now()
         denuncias = []
 
