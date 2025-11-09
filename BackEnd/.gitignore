@@ -9,9 +9,7 @@ __pycache__/
 # files
 # Django collected static and media files
 /api_django/static/*
-!/api_django/static/.gitkeep
-/api_django/staticfiles/
-/api_django/staticfiles/**
+/api_django/staticfiles/*
 /api_django/media/*
 /api_django/project/local_settings.py
 gunicorn-error.log
