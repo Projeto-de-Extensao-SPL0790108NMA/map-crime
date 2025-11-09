@@ -1,15 +1,11 @@
-# Opções de topo aceitas (ex.: preview)
+# Opções globais
 preview = true
-
-[lint]
-# Mova o target-version para cá
 target-version = "py312"
 
-# Seletor básico (ajuste aos seus plugins/regas)
+[lint]
 select = ["E", "F", "I", "B", "UP", "DJ", "RUF"]
 ignore = ["E203", "E266", "E501"]
 fixable = ["ALL"]
 
 [format]
-# (Se sua versão suportar formatador embutido)
 docstring-code-format = true
