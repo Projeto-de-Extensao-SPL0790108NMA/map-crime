@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models as geomodels
-from . import choices 
+from . import choices
 import uuid
 import os
 
