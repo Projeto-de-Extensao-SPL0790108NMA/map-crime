@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { useReportMutate } from '@/hooks/use-report-mutate';
 import { LocationPicker } from '@/components/location-picker';
 import { FilePicker } from '@/components/file-picker';
+import { CATEGORIES } from '@/constants/categories';
 
 export const Route = createFileRoute('/reports/create')({
   component: CreateReport,
@@ -133,9 +134,11 @@ function CreateReport() {
                         <SelectValue placeholder="Selecione a categoria" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="theft">Roubo</SelectItem>
-                        <SelectItem value="assault">Assalto</SelectItem>
-                        <SelectItem value="vandalism">Vandalismo</SelectItem>
+                        {CATEGORIES.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     {fieldState.invalid && (

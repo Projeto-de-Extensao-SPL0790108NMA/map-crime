@@ -18,6 +18,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { StatusBadge } from '@/components/status-badge';
 import { formatDate } from '@/lib/utils';
+import { CATEGORIES_MAP } from '@/constants/categories';
 
 interface ReportDetailsProps {
   report: AnonymousReport;
@@ -29,7 +30,9 @@ export function ReportDetails({ report }: ReportDetailsProps) {
       <CardHeader>
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="space-y-1">
-            <CardTitle className="text-2xl">{report.title}</CardTitle>
+            <CardTitle className="text-2xl">
+              {CATEGORIES_MAP[report.title]}
+            </CardTitle>
             <CardDescription className="text-base">
               Código:{' '}
               <span className="font-mono font-semibold">{report.code}</span>
