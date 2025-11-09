@@ -1,12 +1,15 @@
+from datetime import datetime, time
+
+from django.contrib.gis.geos import Polygon
+from django.utils import timezone
+from django.utils.dateparse import parse_date as dj_parse_date, parse_datetime
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
-from django.contrib.gis.geos import Polygon
-from datetime import datetime
+
 from api.models import Denuncia
 from api.serializers.denuncia.heatmap import DenunciaHeatmapSerializer
-
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 class DenunciaHeatmapList(ListAPIView):
     serializer_class = DenunciaHeatmapSerializer
@@ -24,7 +27,7 @@ class DenunciaHeatmapList(ListAPIView):
     start_date_param = openapi.Parameter(
         "start_date",
         openapi.IN_QUERY,
-        description="Data inicial (ISO-8601). Ex: 2025-10-01T00:00:00",
+        description="Data inicial (ISO-8601). Ex: 2025-10-01. Qualquer horário enviado será ignorado.",
         type=openapi.TYPE_STRING,
         format=openapi.FORMAT_DATETIME,
         required=False,
@@ -32,7 +35,7 @@ class DenunciaHeatmapList(ListAPIView):
     end_date_param = openapi.Parameter(
         "end_date",
         openapi.IN_QUERY,
-        description="Data final (ISO-8601). Ex: 2025-10-31T23:59:59",
+        description="Data final (ISO-8601). Ex: 2025-10-31. Qualquer horário enviado será ignorado.",
         type=openapi.TYPE_STRING,
         format=openapi.FORMAT_DATETIME,
         required=False,
@@ -56,14 +59,18 @@ class DenunciaHeatmapList(ListAPIView):
         """Rota GET documentada para retornar pontos do heatmap."""
         return super().get(request, *args, **kwargs)
 
-    def parse_date(self, s):
-        try:
-            return datetime.fromisoformat(s)
-        except Exception:
+    def parse_date_param(self, raw_value):
+        if not raw_value:
             return None
 
+        parsed_dt = parse_datetime(raw_value)
+        if parsed_dt:
+            return parsed_dt.date()
+
+        return dj_parse_date(raw_value)
+
     def get_queryset(self):
-        qs = Denuncia.objects.all().only("id", "localizacao")  # carregue outros campos se necessário
+        qs = Denuncia.objects.all().only("id", "localizacao").order_by("-created_at")
         # filtro bbox: minx,miny,maxx,maxy
         bbox = self.request.query_params.get("bbox")
         if bbox:
@@ -74,12 +81,20 @@ class DenunciaHeatmapList(ListAPIView):
             except Exception:
                 pass
         # filtro por datas (ISO-8601)
-        start = self.parse_date(self.request.query_params.get("start_date", "") )
-        end = self.parse_date(self.request.query_params.get("end_date", "") )
+        start = self.parse_date_param(self.request.query_params.get("start_date", ""))
+        end = self.parse_date_param(self.request.query_params.get("end_date", ""))
         if start:
-            qs = qs.filter(created_at__gte=start) if hasattr(Denuncia, "created_at") else qs
+            start_dt = timezone.make_aware(
+                datetime.combine(start, time.min),
+                timezone.get_current_timezone(),
+            )
+            qs = qs.filter(created_at__gte=start_dt) if hasattr(Denuncia, "created_at") else qs
         if end:
-            qs = qs.filter(created_at__lte=end) if hasattr(Denuncia, "created_at") else qs
+            end_dt = timezone.make_aware(
+                datetime.combine(end, time.max),
+                timezone.get_current_timezone(),
+            )
+            qs = qs.filter(created_at__lte=end_dt) if hasattr(Denuncia, "created_at") else qs
         # limitar quantidade
         limit = self.request.query_params.get("limit")
         if limit:
