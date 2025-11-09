@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models as geomodels
-from . import choices
+from . import choice
 import uuid
 import os
 
@@ -35,7 +35,7 @@ class Denuncia(models.Model):
     localizacao = geomodels.PointField()
     midia = models.FileField(upload_to=denuncia_midia_upload_path, blank=True, null=True)
     audio = models.FileField(upload_to=denuncia_audio_upload_path, blank=True, null=True)
-    status = models.CharField(max_length=20, choices=choice.STATUS_CHOICES, default='em_analise')
+    status = models.CharField(max_length=20, choices=choice.STATUS_CHOICES.choices, default=choice.STATUS_CHOICES.EM_ANALISE)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
