@@ -38,6 +38,8 @@ def auth_client(user):
     client = APIClient()
     refresh = RefreshToken.for_user(user)
     client.credentials(HTTP_AUTHORIZATION=f"Bearer {str(refresh.access_token)}")
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(refresh.access_token)}')
+    return client
     return client
 
 @pytest.fixture

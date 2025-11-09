@@ -1,0 +1,11 @@
+# Opções globais
+preview = true
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "I", "B", "UP", "DJ", "RUF"]
+ignore = ["E203", "E266", "E501"]
+fixable = ["ALL"]
+
+[format]
+docstring-code-format = true

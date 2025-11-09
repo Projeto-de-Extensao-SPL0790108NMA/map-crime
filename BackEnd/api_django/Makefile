@@ -1,5 +1,5 @@
 # Define alvos "PHONY" para evitar conflito com nomes de arquivos
-.PHONY: help venv run-dev run-docker run-test clean gen-secret \
+.PHONY: help venv run-dev run-docker run-test lint clean gen-secret \
 	docker-stop docker-start docker-restart docker-reset docker-clean \
 	docker-deps-up
 
@@ -38,6 +38,7 @@ help:
 	@echo "  make venv        -> Cria/atualiza o ambiente virtual e instala dependências"
 	@echo "  make run-dev     -> [Recomendado] Sobe DB/Redis (Docker), espera o DB, e roda a app localmente (venv)"
 	@echo "  make run-test    -> Roda os testes (pytest) no ambiente local (venv)"
+	@echo "  make lint        -> Executa Ruff (lint) em todo o projeto"
 	@echo "  make clean       -> Remove o ambiente virtual local (./venv)"
 	@echo "  make gen-secret  -> Gera e IMPRIME um SECRET_KEY novo no terminal"
 	@echo ""
@@ -81,6 +82,9 @@ run-docker:
 run-test: venv
 	@set -o allexport; if [ -f $(ENV_FILE) ]; then . $(ENV_FILE); fi; set +o allexport; \
 	$(VENV)/bin/pytest
+
+lint: venv
+	$(VENV)/bin/ruff check .
 
 clean:
 	rm -rf $(VENV)
