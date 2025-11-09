@@ -148,7 +148,8 @@ class DenunciaReportView(APIView):
         }
 
     def _status_counts_for_queryset(self, queryset):
-        label_map = dict(choice.STATUS_CHOICES)
+        status_choices = getattr(choice.STATUS_CHOICES, "choices", choice.STATUS_CHOICES)
+        label_map = dict(status_choices)
         qs = queryset.order_by()  # remove ordenação para agregações corretas
         aggregated = {
             row["status"]: row["total"]
@@ -157,7 +158,7 @@ class DenunciaReportView(APIView):
 
         status_counts = []
         seen = set()
-        for key, label in choice.STATUS_CHOICES:
+        for key, label in status_choices:
             status_counts.append({"status": key, "label": label, "total": aggregated.get(key, 0)})
             seen.add(key)
 
@@ -168,7 +169,8 @@ class DenunciaReportView(APIView):
         return status_counts
 
     def _build_details(self, queryset):
-        label_map = dict(choice.STATUS_CHOICES)
+        status_choices = getattr(choice.STATUS_CHOICES, "choices", choice.STATUS_CHOICES)
+        label_map = dict(status_choices)
         data = []
         for denuncia in queryset:
             created = timezone.localtime(denuncia.created_at)
