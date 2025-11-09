@@ -1,24 +1,31 @@
-from django.db import models
-from django.contrib.gis.db import models as geomodels
-from . import choice
-from accounts.models import User
-import uuid
-import ulid
 import os
+import uuid
+
+import ulid
+from django.contrib.gis.db import models as geomodels
+from django.db import models
+
+from accounts.models import User
+
+from . import choice
+
 
 def denuncia_midia_upload_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = f"{instance.id}.{ext}"
     return os.path.join('denuncias_midias', filename)
 
+
 def denuncia_audio_upload_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = f"{instance.id}.{ext}"
     return os.path.join('denuncias_audios', filename)
 
+
 def ulid_str():
     return str(ulid.new())
     
+
 class Denuncia(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=True, blank=True)

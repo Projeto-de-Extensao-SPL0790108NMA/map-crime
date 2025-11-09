@@ -1,15 +1,16 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.conf import settings
-from accounts.models import SocialAccount
-from django.contrib.auth import get_user_model
 import requests
-from drf_yasg.utils import swagger_auto_schema
+from django.contrib.auth import get_user_model
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from accounts.models import SocialAccount
 
 User = get_user_model()
+
 
 def verify_google_token(token):
     try:
@@ -19,6 +20,7 @@ def verify_google_token(token):
         return resp.json()
     except Exception:
         return None
+
 
 def get_or_create_user_from_social(provider, social_id, email, name=None, avatar=None, raw_data=None):
     user = None
@@ -31,7 +33,7 @@ def get_or_create_user_from_social(provider, social_id, email, name=None, avatar
         user.set_unusable_password()
         user.save()
 
-    social, created = SocialAccount.objects.get_or_create(
+    social, _created = SocialAccount.objects.get_or_create(
         provider=provider,
         social_id=social_id,
         defaults={
@@ -47,6 +49,7 @@ def get_or_create_user_from_social(provider, social_id, email, name=None, avatar
         social.user = user
         social.save()
     return user
+
 
 class GoogleLoginView(APIView):
     @swagger_auto_schema(

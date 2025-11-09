@@ -1,5 +1,9 @@
+from typing import ClassVar
+
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -8,8 +12,6 @@ from rest_framework.permissions import IsAuthenticated
 from accounts.permissions.groups import IsAdmin, IsUser
 from api.models import Denuncia
 from api.serializers import DenunciaListSerializer
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 
 
 class CustomPagination(PageNumberPagination):
@@ -17,12 +19,13 @@ class CustomPagination(PageNumberPagination):
     page_size_query_param = 'page_size'  # permite o uso de ?page_size=20 na URL
     max_page_size = 100  # limite máximo
 
+
 class DenunciaListView(ListAPIView):
     """Lista todos os registros de Denuncia."""
     queryset = Denuncia.objects.all().order_by('-created_at')  # Ordena por data de criação (mais recente primeiro)
     serializer_class = DenunciaListSerializer
-    permission_classes = [IsAuthenticated, IsAdmin | IsUser]
-    pagination_class = CustomPagination
+    permission_classes: ClassVar = [IsAuthenticated, IsAdmin | IsUser]
+    pagination_class: ClassVar = CustomPagination
 
     status_param = openapi.Parameter(
         "status",

@@ -1,14 +1,16 @@
 import csv
 import io
 from datetime import datetime, time
-from typing import Optional
+from typing import ClassVar
 
 from django.db.models import Count
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
+from docx import Document
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from openpyxl import Workbook
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -17,9 +19,6 @@ from accounts.permissions.groups import IsAdmin, IsUser
 from api import choice
 from api.models import Denuncia
 
-from docx import Document
-from openpyxl import Workbook
-
 
 class DenunciaReportView(APIView):
     """
@@ -27,7 +26,7 @@ class DenunciaReportView(APIView):
     com resumo por status e listagem detalhada filtrada por período.
     """
 
-    permission_classes = [IsAuthenticated, IsAdmin | IsUser]
+    permission_classes: ClassVar = [IsAuthenticated, IsAdmin | IsUser]
 
     formato_param = openapi.Parameter(
         "formato",
@@ -107,8 +106,8 @@ class DenunciaReportView(APIView):
         raise ValidationError({"formato": "Formato inválido. Use csv, xlsx ou docs."})
 
     def _parse_datetime_bound(
-        self, raw_value: Optional[str], field_name: str, *, is_start: bool
-    ) -> Optional[datetime]:
+        self, raw_value: str | None, field_name: str, *, is_start: bool
+    ) -> datetime | None:
         if not raw_value:
             return None
 
@@ -237,11 +236,15 @@ class DenunciaReportView(APIView):
         ws.title = "Relatório"
 
         row_idx = 1
-        ws.cell(row=row_idx, column=1, value="Relatório de Denúncias"); row_idx += 1
-        ws.cell(row=row_idx, column=1, value=summary["periodo"]); row_idx += 1
-        ws.cell(row=row_idx, column=1, value=f"Total de denúncias: {summary['total']}"); row_idx += 2
+        ws.cell(row=row_idx, column=1, value="Relatório de Denúncias")
+        row_idx += 1
+        ws.cell(row=row_idx, column=1, value=summary["periodo"])
+        row_idx += 1
+        ws.cell(row=row_idx, column=1, value=f"Total de denúncias: {summary['total']}")
+        row_idx += 2
 
-        ws.cell(row=row_idx, column=1, value="Totais por status (intervalo)"); row_idx += 1
+        ws.cell(row=row_idx, column=1, value="Totais por status (intervalo)")
+        row_idx += 1
         for status in summary["status_counts"]:
             ws.cell(row=row_idx, column=1, value=status["label"])
             ws.cell(row=row_idx, column=2, value=status["total"])
@@ -249,7 +252,8 @@ class DenunciaReportView(APIView):
 
         if summary["has_filters"]:
             row_idx += 1
-            ws.cell(row=row_idx, column=1, value="Totais por status (geral)"); row_idx += 1
+            ws.cell(row=row_idx, column=1, value="Totais por status (geral)")
+            row_idx += 1
             for status in summary["status_counts_geral"]:
                 ws.cell(row=row_idx, column=1, value=status["label"])
                 ws.cell(row=row_idx, column=2, value=status["total"])

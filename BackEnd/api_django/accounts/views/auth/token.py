@@ -1,16 +1,19 @@
-from rest_framework_simplejwt.views import TokenRefreshView
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status, permissions
-from accounts.serializers import EmailTokenObtainPairSerializer
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from typing import ClassVar
+
+from drf_yasg import openapi
 
 # drf-yasg
 from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+from rest_framework import permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenRefreshView
+
+from accounts.serializers import EmailTokenObtainPairSerializer
+
 
 class EmailTokenObtainPairView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes: ClassVar = [permissions.AllowAny]
 
     @swagger_auto_schema(
         tags=["Accounts"],
@@ -46,6 +49,7 @@ class EmailTokenObtainPairView(APIView):
         serializer = EmailTokenObtainPairSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
 
 # wrapper documentado para refresh (drf-yasg não inspeciona sempre a classe original)
 class DocumentedTokenRefreshView(TokenRefreshView):

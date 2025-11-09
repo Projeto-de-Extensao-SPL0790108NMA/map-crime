@@ -1,29 +1,28 @@
 from django.urls import path
 
-from api.views.user import (
-    UserListView,
-    UserCreateView,
-    UserDetailView,
-    UserUpdateView,
-    UserDeleteView,
-)
-from api.views.group import (
-    GroupListView,
-    GroupCreateView,
-    GroupDetailView,
-    GroupUpdateView,
-    GroupDeleteView,
-)
-
 from api.views.denuncia import (
-    DenunciaListView,
     DenunciaCreateView,
-    DenunciaDetailView,
-    DenunciaUpdateView,
     DenunciaDeleteView,
+    DenunciaDetailView,
+    DenunciaListView,
     DenunciaReportView,
+    DenunciaUpdateView,
 )
 from api.views.denuncia.heatmap import DenunciaHeatmapList
+from api.views.group import (
+    GroupCreateView,
+    GroupDeleteView,
+    GroupDetailView,
+    GroupListView,
+    GroupUpdateView,
+)
+from api.views.user import (
+    UserCreateView,
+    UserDeleteView,
+    UserDetailView,
+    UserListView,
+    UserUpdateView,
+)
 
 urlpatterns = [
     # Users

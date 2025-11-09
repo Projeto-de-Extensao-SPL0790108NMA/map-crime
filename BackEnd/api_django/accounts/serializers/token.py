@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
+
 class EmailTokenObtainPairSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True, required=True)
     password = serializers.CharField(write_only=True)

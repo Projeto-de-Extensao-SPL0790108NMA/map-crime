@@ -1,7 +1,8 @@
 # api/serializers/group/create.py
 
-from rest_framework import serializers
 from django.contrib.auth.models import Group, Permission
+from rest_framework import serializers
+
 
 class GroupCreateSerializer(serializers.ModelSerializer):
     permissions = serializers.PrimaryKeyRelatedField(

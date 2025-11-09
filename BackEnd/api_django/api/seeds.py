@@ -1,5 +1,9 @@
 from django.contrib.auth.models import Group
-from api.models import CustomUser  # ajuste o import se o CustomUser estiver em outro lugar
+
+from api.models import (
+    CustomUser,  # ajuste o import se o CustomUser estiver em outro lugar
+)
+
 
 def run():
     usuarios = [

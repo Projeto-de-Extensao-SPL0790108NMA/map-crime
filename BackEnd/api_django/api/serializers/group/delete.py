@@ -1,7 +1,8 @@
 # api/serializers/group/delete.py
 
-from rest_framework import serializers
 from django.contrib.auth.models import Group
+from rest_framework import serializers
+
 
 class GroupDeleteSerializer(serializers.ModelSerializer):
     class Meta:

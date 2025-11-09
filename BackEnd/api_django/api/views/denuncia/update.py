@@ -1,19 +1,21 @@
+# from drf_yasg.utils import swagger_auto_schema
+from typing import ClassVar
+
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import UpdateAPIView
-from api.models import Denuncia
-from api.serializers import DenunciaUpdateSerializer
 
 # autenticated
 from rest_framework.permissions import IsAuthenticated
-from accounts.permissions.groups import IsAdmin, IsUser
 
-# from drf_yasg.utils import swagger_auto_schema
-from drf_yasg.utils import swagger_auto_schema
+from api.models import Denuncia
+from api.serializers import DenunciaUpdateSerializer
+
 
 class DenunciaUpdateView(UpdateAPIView):
     """Atualiza um registro existente de Denuncia."""
     queryset = Denuncia.objects.all()
     serializer_class = DenunciaUpdateSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes: ClassVar = [IsAuthenticated]
 
     @swagger_auto_schema(
         tags=["Denuncias"],

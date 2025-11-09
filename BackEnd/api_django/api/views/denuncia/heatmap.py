@@ -1,8 +1,10 @@
 from datetime import datetime, time
+from typing import ClassVar
 
 from django.contrib.gis.geos import Polygon
 from django.utils import timezone
-from django.utils.dateparse import parse_date as dj_parse_date, parse_datetime
+from django.utils.dateparse import parse_date as dj_parse_date
+from django.utils.dateparse import parse_datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
@@ -11,10 +13,11 @@ from rest_framework.permissions import AllowAny
 from api.models import Denuncia
 from api.serializers.denuncia.heatmap import DenunciaHeatmapSerializer
 
+
 class DenunciaHeatmapList(ListAPIView):
     serializer_class = DenunciaHeatmapSerializer
-    permission_classes = [AllowAny]
-    pagination_class = None
+    permission_classes: ClassVar = [AllowAny]
+    pagination_class: ClassVar = None
 
     # parametros para documentação Swagger/OpenAPI
     bbox_param = openapi.Parameter(

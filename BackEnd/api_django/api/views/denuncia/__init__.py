@@ -1,17 +1,17 @@
 # api/views/Denuncia/__init__.py
 
 from .create import DenunciaCreateView
-from .list import DenunciaListView
-from .detail import DenunciaDetailView
-from .update import DenunciaUpdateView
 from .delete import DenunciaDeleteView
+from .detail import DenunciaDetailView
+from .list import DenunciaListView
 from .report import DenunciaReportView
+from .update import DenunciaUpdateView
 
 __all__ = [
     "DenunciaCreateView",
-    "DenunciaListView",
-    "DenunciaDetailView",
-    "DenunciaUpdateView",
     "DenunciaDeleteView",
+    "DenunciaDetailView",
+    "DenunciaListView",
     "DenunciaReportView",
+    "DenunciaUpdateView",
 ]

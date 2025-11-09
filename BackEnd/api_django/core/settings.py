@@ -1,10 +1,11 @@
 # settings.py
 
 import os
-from pathlib import Path
-from dotenv import load_dotenv
-from corsheaders.defaults import default_headers
 from datetime import timedelta
+from pathlib import Path
+
+from corsheaders.defaults import default_headers
+from dotenv import load_dotenv
 
 # Base dir — usado para localizar dotenv_files/.env antes de chamar os.getenv
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,11 +21,11 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # CORS / CSRF
 CORS_ALLOWED_ORIGINS = [x for x in os.getenv('CORS_ALLOWED_ORIGINS', ','.join(ALLOWED_HOSTS)).split(',') if x]
-CORS_ALLOW_HEADERS = list(default_headers) + ['X-CSRFToken']
+CORS_ALLOW_HEADERS = [*default_headers, 'X-CSRFToken']
 CSRF_TRUSTED_ORIGINS = [o for o in os.getenv('CSRF_TRUSTED_ORIGINS', ','.join(CORS_ALLOWED_ORIGINS)).split(',') if o]
 
 # caso queira permitir tudo em dev (remova em prod)
-if os.getenv('CORS_ALLOW_ALL', 'False').lower() in ('1','true','yes'):
+if os.getenv('CORS_ALLOW_ALL', 'False').lower() in ('1', 'true', 'yes'):
     CORS_ALLOW_ALL_ORIGINS = True
 
 # se o app estiver atrás de proxy TLS (nginx) — faz request.is_secure() funcionar
@@ -188,7 +189,8 @@ REST_FRAMEWORK = {
 # Configurações do CORS
 CORS_ALLOW_CREDENTIALS = True
 CORS_EXPOSE_HEADERS = ['Content-Type', 'Authorization']
-CORS_ALLOW_HEADERS = list(default_headers) + [
+CORS_ALLOW_HEADERS = [
+    *default_headers,
     'access-control-allow-origin',
     'access-control-allow-credentials',
 ]
@@ -226,7 +228,7 @@ PROJECT_NAME = os.getenv('PROJECT_NAME', os.getenv('APP_NAME', 'Base_Project'))
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=int(os.getenv('JWT_ACCESS_TOKEN_LIFETIME_DAYS', '60'))),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('JWT_REFRESH_TOKEN_LIFETIME_DAYS', '90'))),
-    'ROTATE_REFRESH_TOKENS': os.getenv('JWT_ROTATE_REFRESH_TOKENS', 'False').lower() in ('1','true','yes'),
-    'BLACKLIST_AFTER_ROTATION': os.getenv('JWT_BLACKLIST_AFTER_ROTATION', 'True').lower() in ('1','true','yes'),
+    'ROTATE_REFRESH_TOKENS': os.getenv('JWT_ROTATE_REFRESH_TOKENS', 'False').lower() in ('1', 'true', 'yes'),
+    'BLACKLIST_AFTER_ROTATION': os.getenv('JWT_BLACKLIST_AFTER_ROTATION', 'True').lower() in ('1', 'true', 'yes'),
     'AUTH_HEADER_TYPES': tuple(os.getenv('JWT_AUTH_HEADER_TYPES', 'Bearer').split(',')),
 }

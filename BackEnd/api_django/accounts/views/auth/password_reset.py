@@ -1,15 +1,16 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
-from django.conf import settings
-from accounts.utils.email import send_custom_email
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from accounts.utils.email import send_custom_email
 
 User = get_user_model()
+
 
 class PasswordResetRequestView(APIView):
     @swagger_auto_schema(
@@ -33,6 +34,7 @@ class PasswordResetRequestView(APIView):
             )
             send_custom_email('Redefinição de senha', 'accounts/emails/password_reset.html', {'reset_link': reset_link, 'user_name': user.name or user.email}, user.email)
         return Response({'detail': 'If the email exists, a reset link was sent.'})
+
 
 class PasswordResetConfirmView(APIView):
     @swagger_auto_schema(

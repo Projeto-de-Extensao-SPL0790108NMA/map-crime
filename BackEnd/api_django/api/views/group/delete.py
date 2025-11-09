@@ -1,19 +1,23 @@
-from rest_framework.generics import DestroyAPIView
-from django.contrib.auth.models import Group
-from api.serializers.group import GroupDeleteSerializer
+from typing import ClassVar
 
-# autenticated
-from rest_framework.permissions import IsAuthenticated
-from accounts.permissions.groups import IsAdmin, IsUser
+from django.contrib.auth.models import Group
 
 # from drf_yasg.utils import swagger_auto_schema
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.generics import DestroyAPIView
+
+# autenticated
+from rest_framework.permissions import IsAuthenticated
+
+from accounts.permissions.groups import IsAdmin, IsUser
+from api.serializers.group import GroupDeleteSerializer
+
 
 class GroupDeleteView(DestroyAPIView):
     """Remove um registro específico de User."""
     queryset = Group.objects.all()
     serializer_class = GroupDeleteSerializer
-    permission_classes = [IsAuthenticated, IsAdmin | IsUser]
+    permission_classes: ClassVar = [IsAuthenticated, IsAdmin | IsUser]
 
     @swagger_auto_schema(
         tags=["Groups"],

@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-
 MAX_FILES_PER_REQUEST = 3
 
 

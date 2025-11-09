@@ -1,13 +1,13 @@
-from datetime import timedelta
 import random
 import uuid
+from datetime import timedelta
 
+from django.contrib.gis.geos import Point
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from django.contrib.gis.geos import Point
 
-from api.models import Denuncia
 from api import choice
+from api.models import Denuncia
 
 
 class Command(BaseCommand):

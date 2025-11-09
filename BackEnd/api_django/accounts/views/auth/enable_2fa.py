@@ -1,17 +1,20 @@
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-import pyotp
-import qrcode
-from io import BytesIO
 import base64
 import os
+from io import BytesIO
+from typing import ClassVar
+
+import pyotp
+import qrcode
 from django.conf import settings
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 
 class Enable2FAView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes: ClassVar = [IsAuthenticated]
 
     @swagger_auto_schema(
         tags=["Accounts"],
@@ -34,11 +37,12 @@ class Enable2FAView(APIView):
             img.save(buffer, format="PNG")
             qr_b64 = base64.b64encode(buffer.getvalue()).decode()
             return Response({"secret": secret, "qr": f"data:image/png;base64,{qr_b64}"})
-        except Exception as e:
+        except Exception:
             return Response({"detail": "Erro ao gerar 2FA"}, status=500)
 
+
 class Verify2FAView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes: ClassVar = [IsAuthenticated]
 
     @swagger_auto_schema(
         tags=["Accounts"],

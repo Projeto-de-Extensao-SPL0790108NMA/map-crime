@@ -1,10 +1,18 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-from django.db import models
+from typing import ClassVar
+
 from django.conf import settings
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
+from django.db import models
+
 try:
     from django.contrib.postgres.fields import ArrayField
 except Exception:
     ArrayField = None
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -24,30 +32,32 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=150, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_social_account = models.BooleanField(default=False)
-    totp_secret = models.CharField(max_length=128, blank=True, null=True)
+    totp_secret = models.CharField(max_length=128, blank=True, null=True)  # noqa: DJ001 - null diferencia 2FA não configurado
     route_permissions = models.JSONField(default=list, blank=True)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS: ClassVar[list[str]] = []
 
     def __str__(self):
         return self.email
+
 
 class SocialAccount(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='social_accounts')
     provider = models.CharField(max_length=50)
     social_id = models.CharField(max_length=255)
-    email = models.EmailField(null=True, blank=True)
-    name = models.CharField(max_length=255, null=True, blank=True)
-    avatar = models.URLField(null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)  # noqa: DJ001 - integrações externas podem enviar NULL
+    name = models.CharField(max_length=255, null=True, blank=True)  # noqa: DJ001 - dados incompletos de provedores
+    avatar = models.URLField(null=True, blank=True)  # noqa: DJ001 - avatar opcional vindo de provedores
     verified = models.BooleanField(default=False)
     raw_data = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

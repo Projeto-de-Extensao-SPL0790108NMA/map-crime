@@ -1,19 +1,22 @@
+# from drf_yasg.utils import swagger_auto_schema
+from typing import ClassVar
+
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import DestroyAPIView
-from api.models import Denuncia
-from api.serializers import DenunciaDeleteSerializer
 
 # autenticated
 from rest_framework.permissions import IsAuthenticated
-from accounts.permissions.groups import IsAdmin, IsUser
 
-# from drf_yasg.utils import swagger_auto_schema
-from drf_yasg.utils import swagger_auto_schema
+from accounts.permissions.groups import IsAdmin, IsUser
+from api.models import Denuncia
+from api.serializers import DenunciaDeleteSerializer
+
 
 class DenunciaDeleteView(DestroyAPIView):
     """Remove um registro específico de Denuncia."""
     queryset = Denuncia.objects.all()
     serializer_class = DenunciaDeleteSerializer
-    permission_classes = [IsAuthenticated, IsAdmin | IsUser]
+    permission_classes: ClassVar = [IsAuthenticated, IsAdmin | IsUser]
 
     @swagger_auto_schema(
         tags=["Denuncias"],

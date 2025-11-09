@@ -1,6 +1,10 @@
-from rest_framework import serializers
+from typing import ClassVar
+
 from django.contrib.gis.geos import Point
+from rest_framework import serializers
+
 from api.models import Denuncia
+
 from .utils import enforce_file_upload_limit
 
 
@@ -10,7 +14,7 @@ class DenunciaCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Denuncia
-        fields = [
+        fields: ClassVar[list[str]] = [
             "id",
             "protocolo",
             "usuario",
@@ -25,7 +29,7 @@ class DenunciaCreateSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at", "localizacao", "protocolo", "usuario"]
+        read_only_fields: ClassVar[list[str]] = ["id", "created_at", "updated_at", "localizacao", "protocolo", "usuario"]
 
     def validate_latitude(self, value):
         """Valida que a latitude está no intervalo válido (-90 a 90)."""

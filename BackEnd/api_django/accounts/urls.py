@@ -1,9 +1,13 @@
 from django.urls import path
-from .views.auth.logout import LogoutView
-from .views.auth.google_login import GoogleLoginView
-from .views.auth.password_reset import PasswordResetRequestView, PasswordResetConfirmView
+
 from .views.auth.enable_2fa import Enable2FAView, Verify2FAView
-from .views.auth.token import EmailTokenObtainPairView, DocumentedTokenRefreshView
+from .views.auth.google_login import GoogleLoginView
+from .views.auth.logout import LogoutView
+from .views.auth.password_reset import (
+    PasswordResetConfirmView,
+    PasswordResetRequestView,
+)
+from .views.auth.token import DocumentedTokenRefreshView, EmailTokenObtainPairView
 
 app_name = 'accounts'
 

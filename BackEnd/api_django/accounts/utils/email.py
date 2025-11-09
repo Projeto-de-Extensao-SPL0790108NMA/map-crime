@@ -1,7 +1,9 @@
+from datetime import datetime
+
+from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.conf import settings
-from datetime import datetime
+
 
 def send_custom_email(subject, template_path, context, to_email):
     context = {

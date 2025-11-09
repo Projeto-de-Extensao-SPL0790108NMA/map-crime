@@ -1,11 +1,13 @@
 from urllib.parse import parse_qs
+
 from channels.db import database_sync_to_async
 from channels.middleware import BaseMiddleware
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from rest_framework_simplejwt.tokens import AccessToken
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
 
 class TokenAuthMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
@@ -28,4 +30,6 @@ class TokenAuthMiddleware(BaseMiddleware):
         except Exception:
             return AnonymousUser()
 
-TokenAuthMiddlewareStack = lambda inner: TokenAuthMiddleware(inner)
+
+def TokenAuthMiddlewareStack(inner):
+    return TokenAuthMiddleware(inner)

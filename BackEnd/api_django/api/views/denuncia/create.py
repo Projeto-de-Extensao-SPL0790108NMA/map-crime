@@ -1,18 +1,20 @@
+from typing import ClassVar
+
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import CreateAPIView
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.permissions import AllowAny
+
 from api.models import Denuncia
 from api.serializers import DenunciaCreateSerializer
 
-from rest_framework.permissions import AllowAny
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 class DenunciaCreateView(CreateAPIView):
     queryset = Denuncia.objects.all()
     serializer_class = DenunciaCreateSerializer
-    permission_classes = [AllowAny]
-    parser_classes = [JSONParser, MultiPartParser, FormParser]  # Aceita JSON e form-data
+    permission_classes: ClassVar = [AllowAny]
+    parser_classes: ClassVar = [JSONParser, MultiPartParser, FormParser]  # Aceita JSON e form-data
 
     @swagger_auto_schema(
         tags=["Denuncias"],

@@ -1,5 +1,8 @@
+from typing import ClassVar
+
 from django.contrib import admin
 from django.utils.html import format_html
+
 from .models import Denuncia
 
 
@@ -84,7 +87,7 @@ class DenunciaAdmin(admin.ModelAdmin):
     list_per_page = 25
     
     # Ações customizadas
-    actions = ['marcar_como_analise', 'marcar_como_resolvido', 'marcar_como_rejeitado']
+    actions: ClassVar[list[str]] = ['marcar_como_analise', 'marcar_como_resolvido', 'marcar_como_rejeitado']
     
     # Métodos para exibição formatada
     def id_truncado(self, obj):

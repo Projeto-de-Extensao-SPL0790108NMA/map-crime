@@ -1,5 +1,7 @@
 from rest_framework import serializers
+
 from api.models import Denuncia
+
 
 class DenunciaHeatmapSerializer(serializers.ModelSerializer):
     categoria = serializers.SerializerMethodField()

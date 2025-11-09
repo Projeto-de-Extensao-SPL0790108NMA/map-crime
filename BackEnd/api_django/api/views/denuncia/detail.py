@@ -1,17 +1,21 @@
+# from drf_yasg.utils import swagger_auto_schema
+from typing import ClassVar
+
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import RetrieveAPIView
-from api.models import Denuncia
-from api.serializers import DenunciaDetailSerializer
 
 # autenticated
 from rest_framework.permissions import AllowAny
-# from drf_yasg.utils import swagger_auto_schema
-from drf_yasg.utils import swagger_auto_schema
+
+from api.models import Denuncia
+from api.serializers import DenunciaDetailSerializer
+
 
 class DenunciaDetailView(RetrieveAPIView):
     """Retorna os detalhes de um registro específico de Denuncia."""
     queryset = Denuncia.objects.all()
     serializer_class = DenunciaDetailSerializer
-    permission_classes = [AllowAny]
+    permission_classes: ClassVar = [AllowAny]
 
     @swagger_auto_schema(
         tags=["Denuncias"],

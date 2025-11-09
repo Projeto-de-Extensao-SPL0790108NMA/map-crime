@@ -1,20 +1,21 @@
-from rest_framework.generics import RetrieveAPIView
+from typing import ClassVar
+
 from django.contrib.auth import get_user_model
-User = get_user_model()
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
+
+from accounts.permissions.groups import IsAdmin, IsUser
 from api.serializers import UserDetailSerializer
 
-# autenticated
-from rest_framework.permissions import IsAuthenticated
-from accounts.permissions.groups import IsAdmin, IsUser
+User = get_user_model()
 
-# from drf_yasg.utils import swagger_auto_schema
-from drf_yasg.utils import swagger_auto_schema
 
 class UserDetailView(RetrieveAPIView):
     """Retorna os detalhes de um registro específico de User."""
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
-    permission_classes = [IsAuthenticated, IsAdmin | IsUser]
+    permission_classes: ClassVar = [IsAuthenticated, IsAdmin | IsUser]
 
     @swagger_auto_schema(
         tags=["Users"],
