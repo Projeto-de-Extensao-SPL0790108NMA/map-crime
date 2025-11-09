@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, SocialAccount
+
+from .models import SocialAccount, User
+
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
@@ -19,6 +21,7 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'name', 'password1', 'password2'),
         }),
     )
+
 
 @admin.register(SocialAccount)
 class SocialAccountAdmin(admin.ModelAdmin):
