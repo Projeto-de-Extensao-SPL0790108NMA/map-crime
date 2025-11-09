@@ -27,6 +27,7 @@ jobs:
       POSTGRES_PASSWORD: mapcrime
       POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
+      DB_ENGINE: django.contrib.gis.db.backends.postgis
       DJANGO_SETTINGS_MODULE: core.settings
     steps:
       - name: Checkout repository
