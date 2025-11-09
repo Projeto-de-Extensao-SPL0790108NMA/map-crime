@@ -10,12 +10,23 @@ ENV DJANGO_SETTINGS_MODULE=core.settings
 COPY . .
 
 RUN mkdir -p /data/web/staticfiles
-RUN mv /app/favicon.ico /data/web/staticfiles/favicon.ico
-
 RUN python -m venv /venv
+
+# instalar dependências do sistema ANTES do pip para que GDAL/PROJ estejam disponíveis
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends && \
-	rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends \
+      build-essential gcc g++ python3-dev \
+      gdal-bin libgdal-dev proj-bin libproj-dev libgeos-dev \
+      ca-certificates wget && \
+    rm -rf /var/lib/apt/lists/*
+
+# criar symlink estável e expor variavel para o Django
+RUN set -eux; \
+    if ldconfig -p | grep -i libgdal > /dev/null 2>&1; then \
+      LD_PATH="$(ldconfig -p | grep -i libgdal | head -n1 | awk '{print $NF}')"; \
+      ln -sf "$LD_PATH" /usr/lib/libgdal.so || true; \
+    fi
+ENV GDAL_LIBRARY_PATH=/usr/lib/libgdal.so
 
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt

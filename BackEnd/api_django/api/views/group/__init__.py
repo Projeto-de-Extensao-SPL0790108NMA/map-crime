@@ -1,15 +1,15 @@
 # api/views/group/__init__.py
 
 from .create import GroupCreateView
-from .list import GroupListView
-from .detail import GroupDetailView
-from .update import GroupUpdateView
 from .delete import GroupDeleteView
+from .detail import GroupDetailView
+from .list import GroupListView
+from .update import GroupUpdateView
 
 __all__ = [
     "GroupCreateView",
-    "GroupListView",
-    "GroupDetailView",
-    "GroupUpdateView",
     "GroupDeleteView",
+    "GroupDetailView",
+    "GroupListView",
+    "GroupUpdateView",
 ]

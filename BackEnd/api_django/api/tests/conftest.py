@@ -1,17 +1,56 @@
 import pytest
-from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
+
 @pytest.fixture
-def user():
-    return User.objects.create_user(username="testuser", password="123456")
+def create_groups(db):
+    """Garante que os grupos padrão existam no banco."""
+    for name in ["Admin", "User"]:
+        Group.objects.get_or_create(name=name)
+
+
+@pytest.fixture
+def user(db, create_groups):
+    """Cria um usuário comum."""
+    u = User.objects.create_user(email="user@example.com", password="123456")
+    group = Group.objects.get(name="User")
+    u.groups.add(group)
+    u.save()
+    return u
+
+
+@pytest.fixture
+def admin_user(db, create_groups):
+    """Cria um usuário administrador."""
+    u = User.objects.create_user(email="admin@example.com", password="adminpass")
+    u.is_superuser = True
+    u.is_staff = True
+    u.save()
+    group = Group.objects.get(name="Admin")
+    u.groups.add(group)
+    return u
+
 
 @pytest.fixture
 def auth_client(user):
+    """Cliente autenticado como usuário comum."""
     client = APIClient()
     refresh = RefreshToken.for_user(user)
-    client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(refresh.access_token)}')
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token!s}")
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token!s}')
+    return client
+    return client
+
+
+@pytest.fixture
+def admin_client(admin_user):
+    """Cliente autenticado como admin."""
+    client = APIClient()
+    refresh = RefreshToken.for_user(admin_user)
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token!s}")
     return client

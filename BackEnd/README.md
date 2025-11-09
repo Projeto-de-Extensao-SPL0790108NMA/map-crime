@@ -1,4 +1,4 @@
-# 🛠️ Setup do Projeto (Comandos)
+# 🛠️ Setup do Projeto
 
 ## 📁 Ambiente Virtual (.venv)
 
@@ -122,3 +122,30 @@ docker system prune -a
 ```
 
 ---
+
+## ☁️ AWS (Comandos Screen)
+
+### Criar uma nova sessão
+```bash
+screen -S nome_da_sessao
+```
+
+### Desanexar da sessão
+```bash
+Ctrl + A, depois Ctrl + D
+```
+
+### Reanexar à sessão
+```bash
+screen -r nome_da_sessao
+```
+
+### Listar sessões ativas
+```bash
+screen -ls
+```
+
+### Finalizar a sessão
+```bash
+exit
+```

@@ -1,5 +1,9 @@
 from django.contrib.auth.models import Group
-from api.models import CustomUser  # ajuste o import se o CustomUser estiver em outro lugar
+
+from api.models import (
+    CustomUser,  # ajuste o import se o CustomUser estiver em outro lugar
+)
+
 
 def run():
     usuarios = [
@@ -9,13 +13,6 @@ def run():
             "password": "admin123",
             "grupo": "Admin",
             "superuser": True
-        },
-        {
-            "username": "example",
-            "email": "example@example.com",
-            "password": "example123",
-            "grupo": "Example",
-            "superuser": False
         },
         {
             "username": "user",

@@ -1,15 +1,15 @@
-from rest_framework.generics import ListAPIView
-from api.models import CustomUser
-from api.serializers import UserListSerializer
-# paginations
-from rest_framework.pagination import PageNumberPagination
+from typing import ClassVar
 
-# autenticated
-from rest_framework.permissions import IsAuthenticated
-from api.permissions.grupos import IsAdmin, IsUser, IsExample
-
-# from drf_yasg.utils import swagger_auto_schema
+from django.contrib.auth import get_user_model
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+
+from accounts.permissions.groups import IsAdmin, IsUser
+from api.serializers import UserListSerializer
+
+User = get_user_model()
 
 
 class CustomPagination(PageNumberPagination):
@@ -17,14 +17,16 @@ class CustomPagination(PageNumberPagination):
     page_size_query_param = 'page_size'  # permite o uso de ?page_size=20 na URL
     max_page_size = 100  # limite máximo
 
+
 class UserListView(ListAPIView):
     """Lista todos os registros de User."""
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all().order_by('email')  # Ordena por email (alfabético)
     serializer_class = UserListSerializer
-    permission_classes = [IsAuthenticated, IsAdmin | IsUser | IsExample]
-    pagination_class = CustomPagination  # 👈 Aqui tá a mágica
+    permission_classes: ClassVar = [IsAuthenticated, IsAdmin | IsUser]
+    pagination_class: ClassVar = CustomPagination
 
     @swagger_auto_schema(
+        tags=["Users"],
         operation_description="Lista todos os registros de User.",
         responses={200: UserListSerializer(many=True)},
         operation_id="user_list",

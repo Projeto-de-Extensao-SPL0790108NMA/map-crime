@@ -1,15 +1,15 @@
 # api/views/User/__init__.py
 
 from .create import UserCreateView
-from .list import UserListView
-from .detail import UserDetailView
-from .update import UserUpdateView
 from .delete import UserDeleteView
+from .detail import UserDetailView
+from .list import UserListView
+from .update import UserUpdateView
 
 __all__ = [
     "UserCreateView",
-    "UserListView",
-    "UserDetailView",
-    "UserUpdateView",
     "UserDeleteView",
+    "UserDetailView",
+    "UserListView",
+    "UserUpdateView",
 ]

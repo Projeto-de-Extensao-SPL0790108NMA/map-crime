@@ -2,17 +2,24 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.pyc
 # C extensions
 *.so
 
 # files
-/API-Django/static/
-/API-Django/media/
-/API-Django/project/local_settings.py
+# Django collected static and media files
+/api_django/static/*
+/api_django/staticfiles/*
+/api_django/media/*
+/api_django/project/local_settings.py
 gunicorn-error.log
 __localcode
 /data/
+staticfiles/*
+.env
+venv/
+/api_django/denuncias_midias/*
+/api_django/denuncias_audios/*
 
 # Distribution / packaging
 .Python

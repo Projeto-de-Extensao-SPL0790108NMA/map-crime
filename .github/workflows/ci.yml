@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:15-3.3
+        env:
+          POSTGRES_DB: mapcrime
+          POSTGRES_USER: mapcrime
+          POSTGRES_PASSWORD: mapcrime
+        ports:
+          - 5432:5432  # <- publica a porta para o host do runner
+        options: >-
+          --health-cmd "pg_isready -U mapcrime -d mapcrime"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      POSTGRES_DB: mapcrime
+      POSTGRES_USER: mapcrime
+      POSTGRES_PASSWORD: mapcrime
+      POSTGRES_HOST: 127.0.0.1   # <- conecta no host do runner
+      POSTGRES_PORT: 5432
+      DB_ENGINE: django.contrib.gis.db.backends.postgis
+      DJANGO_SETTINGS_MODULE: core.settings
+      SECRET_KEY: test-ci-secret
+      DEBUG: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: BackEnd/api_django/requirements.txt
+
+      - name: Install system dependencies (GDAL/PROJ + psql client)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin libgdal-dev libproj-dev postgresql-client
+
+      - name: Install Python dependencies
+        working-directory: BackEnd/api_django
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Wait for database to be ready
+        run: |
+          for i in {1..60}; do
+            if pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -d "$POSTGRES_DB" -U "$POSTGRES_USER"; then
+              exit 0
+            fi
+            echo "Waiting for Postgres ($i/60)..."
+            sleep 2
+          done
+          echo "Database did not become ready in time"
+          exit 1
+        env:
+          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
+
+      - name: Smoke test DB (opcional)
+        run: |
+          psql "host=$POSTGRES_HOST port=$POSTGRES_PORT dbname=$POSTGRES_DB user=$POSTGRES_USER" -c "SELECT version();"
+        env:
+          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
+
+      - name: Run migrations
+        working-directory: BackEnd/api_django
+        run: python manage.py migrate --noinput
+
+      - name: Run lint
+        working-directory: BackEnd/api_django
+        run: ruff check .
+
+      - name: Run tests
+        working-directory: BackEnd/api_django
+        run: pytest
+
+      - name: Print Postgres logs (on failure)
+        if: failure()
+        run: |
+          CID=$(docker ps -a --filter "ancestor=postgis/postgis:15-3.3" --format "{{.ID}}" | head -n1 || true)
+          if [ -n "$CID" ]; then docker logs "$CID" || true; fi
