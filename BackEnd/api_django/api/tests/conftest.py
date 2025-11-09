@@ -13,5 +13,20 @@ def user():
 def auth_client(user):
     client = APIClient()
     refresh = RefreshToken.for_user(user)
+<<<<<<< Updated upstream
     client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(refresh.access_token)}')
     return client
+=======
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {str(refresh.access_token)}")
+    client.force_authenticate(user=user)
+    return client
+
+@pytest.fixture
+def admin_client(admin_user):
+    """Cliente autenticado como admin."""
+    client = APIClient()
+    refresh = RefreshToken.for_user(admin_user)
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {str(refresh.access_token)}")
+    client.force_authenticate(user=admin_user)
+    return client
+>>>>>>> Stashed changes

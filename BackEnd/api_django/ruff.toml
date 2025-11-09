@@ -1,0 +1,4 @@
+[lint]
+select = ["E9", "F63", "F7", "F82"]
+
+target-version = "py312"
