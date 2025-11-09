@@ -7,6 +7,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgis/postgis:15-3.3
@@ -14,21 +15,27 @@ jobs:
           POSTGRES_DB: mapcrime
           POSTGRES_USER: mapcrime
           POSTGRES_PASSWORD: mapcrime
-        ports:
-          - 5432:5432
+        # Em GitHub Actions, conecte via hostname do serviço (sem mapear portas)
         options: >-
           --health-cmd "pg_isready -U mapcrime -d mapcrime"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
     env:
+      # Variáveis usadas pelo Django/settings
       POSTGRES_DB: mapcrime
       POSTGRES_USER: mapcrime
       POSTGRES_PASSWORD: mapcrime
-      POSTGRES_HOST: localhost
+      POSTGRES_HOST: postgres        # <— usa o nome do serviço
       POSTGRES_PORT: 5432
       DB_ENGINE: django.contrib.gis.db.backends.postgis
       DJANGO_SETTINGS_MODULE: core.settings
+
+      # Opcionais (evita falha caso seu settings exija)
+      SECRET_KEY: test-ci-secret
+      DEBUG: "1"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,7 +47,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: BackEnd/api_django/requirements.txt
 
-      - name: Install system dependencies
+      - name: Install system dependencies (GDAL/PROJ + psql client)
         run: |
           sudo apt-get update
           sudo apt-get install -y gdal-bin libgdal-dev libproj-dev postgresql-client
@@ -51,10 +58,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Wait for database
+      - name: Wait for database to be ready
         run: |
           for i in {1..30}; do
-            if pg_isready -h 127.0.0.1 -p $POSTGRES_PORT -d $POSTGRES_DB -U $POSTGRES_USER; then
+            if pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -d "$POSTGRES_DB" -U "$POSTGRES_USER"; then
               exit 0
             fi
             echo "Waiting for Postgres ($i/30)..."
@@ -76,3 +83,15 @@ jobs:
       - name: Run tests
         working-directory: BackEnd/api_django
         run: pytest
+
+      # Opcional: ajuda na depuração se algo falhar
+      - name: Print Postgres logs (on failure)
+        if: failure()
+        run: |
+          docker ps -a
+          # Tenta encontrar e imprimir logs do serviço postgres
+          CID=$(docker ps -a --filter "ancestor=postgis/postgis:15-3.3" --format "{{.ID}}" | head -n1 || true)
+          if [ -n "$CID" ]; then
+            echo "== Container $CID logs =="
+            docker logs "$CID" || true
+          fi
