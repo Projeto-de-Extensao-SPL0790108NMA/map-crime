@@ -60,7 +60,7 @@ function SignIn() {
     },
     onSuccess: async () => {
       await router.invalidate();
-      await navigate({ to: search.redirect || FALLBACK_REDIRECT });
+      await router.navigate({ to: search.redirect || FALLBACK_REDIRECT }); // Refresh the current route
     },
     onError: () => {
       form.setError('email', { message: 'Email ou senha inválidos.' });

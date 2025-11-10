@@ -28,7 +28,7 @@ function getStoredUser() {
   return user ? JSON.parse(user) : null;
 }
 
-function setStoredUser(user: AuthenticatedUser | null) {
+export function setStoredUser(user: AuthenticatedUser | null) {
   if (user) {
     localStorage.setItem(key, JSON.stringify(user));
   } else {
