@@ -1,102 +1,96 @@
-# Base_Project_Django
+# Mapa Crime — Back-end
 
-Projeto Django com API REST, PostgreSQL e Docker, preparado para desenvolvimento com MailHog, documentação (Swagger) e app de autenticação reutilizável (`accounts`).
+API Django do projeto Mapa Crime: autenticação via Simple JWT, CRUD de usuários/grupos/denúncias, relatórios (CSV/XLSX/DOCX), integrações com PostgreSQL/PostGIS, Redis e MailHog, além de documentação Swagger pronta.
 
-Links rápidos
-- Docs do projeto: ./docs/README.md
-- README do app accounts: ./accounts/README.md
-- Como contribuir: ./CONTRIBUTING.md
+## Pré-requisitos para rodar localmente
 
-Resumo
-- API prefixada em `/api/`
-- Documentação interativa: `/swagger/` ou `/documentation/` (conforme configuração)
-- Rodar em dev: `make run-dev` (subirá psql, redis, mailhog e iniciará app local)
+| Dependência | Versão/observação |
+| --- | --- |
+| Python | 3.12 (recomendado). Necessário `python3-venv`. |
+| `make` | Utilizado para orquestrar venv, migrations e serviços Docker. |
+| Docker + Docker Compose | Subir PostgreSQL, Redis e MailHog (`docker compose` v2 ou `docker-compose` v1). |
+| Git | Clonar o repositório. |
+| Arquivo `.env` | Configurado em `BackEnd/dotenv_files/.env`. Ajuste `POSTGRES_HOST` conforme roda local/containers. |
 
-## Sumário
+> Dependências opcionais: `psql` CLI (para acessar o banco), `redis-cli` (debug) e ferramentas GIS caso vá manipular geodados fora da API.
 
-- [Instalação](#instalação)
-- [Uso](#uso)
-- [Rotas da API](#rotas-da-api)
-- [Executando Testes](#executando-testes)
-- [Docker](#docker)
-- [Contribuindo](#contribuindo)
-- [Licença](#licença)
+## Documentação centralizada
 
-## Instalação
+Toda a documentação detalhada mora em `BackEnd/api_django/docs/`:
+- `docs/README.md`: índice com navegação rápida entre os tópicos.
+- `docs/api.md`: endpoints, autenticação, exemplos de payloads e filtros.
+- `docs/development.md`: passo a passo completo para preparar o ambiente local.
+- `docs/docker.md`: como subir/derrubar a stack Docker, resetar volumes e depurar.
+- `docs/architecture.md`: visão geral de apps, modelos, permissões e fluxos.
 
-1. Clone o repositório:
+Consulte esses arquivos sempre que precisar de instruções aprofundadas.
+
+<p align="center">
+  <a href="./docs/README.md"><code>Índice</code></a> •
+  <a href="./docs/development.md"><code>Development</code></a> •
+  <a href="./docs/docker.md"><code>Docker</code></a> •
+  <a href="./docs/api.md"><code>API</code></a> •
+  <a href="./docs/architecture.md"><code>Arquitetura</code></a>
+</p>
+
+<p align="right">
+  <a href="./docs/README.md"><code>Ir para a documentação completa →</code></a>
+</p>
+
+## Como começar
+
+1. **Clonar o repositório e acessar o back-end**
+   ```bash
+   git clone https://github.com/Projeto-de-Extensao-SPL0790108NMA/map-crime.git
+   cd BackEnd/api_django
    ```
-   git clone <repository-url>
-   cd api_django
+2. **Configurar o `.env`**  
+   Garanta que `../dotenv_files/.env` existe. Ajuste as variáveis (ex.: `POSTGRES_HOST=127.0.0.1` para rodar localmente).
+3. **Criar o ambiente virtual e instalar dependências**
+   ```bash
+   make venv
    ```
-
-2. Crie um ambiente virtual e instale as dependências:
-   ```
+4. **Subir dependências + servidor de desenvolvimento**
+   ```bash
    make run-dev
    ```
+   Esse alvo sobe PostgreSQL/Redis/MailHog via Docker, espera o banco, aplica migrações, roda `collectstatic`/`seed` e inicia a API com Daphne em `http://localhost:8000/`.
 
-## Uso
-
-Para iniciar o servidor de desenvolvimento, execute:
-```
-make run-dev
-```
-
-Este comando criará um ambiente virtual, instalará os pacotes necessários, aplicará as migrações do banco de dados e iniciará o servidor usando Daphne.
-
-## Rotas da API
-
-Todas as rotas listadas abaixo são prefixadas por `/api/` (definido em core/urls.py).
-
-Autenticação
-- POST  /api/token/captcha/       — Obter access + refresh token com captcha (TokenObtainPairWithCaptchaView)
-- POST  /api/token/               — Obter access + refresh token (TokenObtainPairView)
-- POST  /api/token/google/        — Login via Google (GoogleLoginView)
-- POST  /api/token/refresh/       — Renovar token (TokenRefreshView)
-
-Users (CRUD)
-- GET   /api/users/                     — Listar usuários (UserListView)
-- POST  /api/users/create/              — Criar usuário (UserCreateView)
-- GET   /api/users/{pk}/                — Detalhar usuário (UserDetailView)
-- PUT   /api/users/{pk}/update/         — Atualizar usuário (UserUpdateView)
-- PATCH /api/users/{pk}/update/         — Atualizar parcialmente (se implementado)
-- DELETE /api/users/{pk}/delete/        — Deletar usuário (UserDeleteView)
-
-Groups (CRUD) — observação de conflito no código
-- Intenção esperada:
-  - GET   /api/groups/                  — Listar grupos (GroupListView)
-  - POST  /api/groups/create/           — Criar grupo (GroupCreateView)
-  - GET   /api/groups/{pk}/             — Detalhar grupo (GroupDetailView)
-  - PUT   /api/groups/{pk}/update/      — Atualizar grupo (GroupUpdateView)
-  - DELETE /api/groups/{pk}/delete/     — Deletar grupo (GroupDeleteView)
-- Observação: no arquivo api/urls.py há caminhos duplicados para `groups/` e `groups/<int:pk>/` — isso causa conflito (apenas a primeira rota definida será usada). Recomenda-se ajustar as rotas de criação/atualização/remoção para caminhos distintos (ex.: `groups/create/`, `groups/<int:pk>/update/`, `groups/<int:pk>/delete/`) como feito para `examples` e `users`.
-
-> Observações:
-> - Os métodos exatos suportados (PUT vs PATCH, etc.) dependem da implementação das views; acima são inferências padrão com base nos nomes das views.
-> - Para obter a lista exata e atual das rotas com nomes e padrões, pode-se usar o comando de gerenciamento custom (se adicionado) ou inspecionar os arquivos `api/urls.py` e outras `urls.py`.
-
-## Executando Testes
-
-Para executar os testes automatizados, use:
-```
-make run-test
-```
-
-Isto executará os testes definidos no diretório `tests` usando pytest.
-
-## Docker
-
-Para rodar a aplicação usando Docker, execute:
-```
+Alternativa totalmente containerizada:
+```bash
 make run-docker
 ```
 
-Este comando irá buildar a imagem Docker e iniciar todos os serviços definidos em `docker-compose.yml`.
+## Comandos principais (`Makefile`)
 
-## Contribuindo
+| Comando | Descrição |
+| --- | --- |
+| `make run-dev` | Ambiente recomendado: venv local + dependências em Docker. |
+| `make run-docker` | Sobe a stack inteira (inclui container do Django). |
+| `make docker-deps-up` | Apenas PostgreSQL, Redis e MailHog (use com venv local). |
+| `make run-test` | Executa pytest com variáveis do `.env`. |
+| `make lint` / `make lint-fix` | Verifica/corrige estilo com Ruff. |
+| `make docker-reset` | Para containers e remove volumes (zera o banco). |
+| `make docker-clean` | Remove containers, volumes e imagens relacionados. |
+| `make gen-secret` | Gera um novo `SECRET_KEY` no terminal. |
 
-Contribuições são bem-vindas! Abra uma issue ou envie um pull request para melhorias ou correções de bugs.
+Veja a lista completa no próprio `Makefile`.
+
+## Rotas e autenticação
+
+Detalhes sobre endpoints (users, groups, denúncias, heatmap, relatórios, fluxo JWT/2FA) estão em `docs/api.md`. A documentação interativa fica em:
+- Swagger UI: `http://localhost:8000/documentation/`
+- OpenAPI JSON/YAML: `http://localhost:8000/swagger.json` / `http://localhost:8000/swagger.yaml`
+
+## Testes e qualidade
+
+```bash
+make run-test  # executa pytest
+make lint      # ruff check .
+```
+
+Consulte `CONTRIBUTING.md` para padrões de contribuição.
 
 ## Licença
 
-Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Projeto distribuído sob a licença MIT. Veja `LICENSE` na raiz do repositório.
