@@ -10,7 +10,8 @@ export interface CreateReportDTO {
 
 export type ReportStatus = 'pending' | 'in_progress' | 'resolved' | 'rejected';
 
-interface ReportTimelineEntry {
+export interface TimelineEvent {
+  id: string;
   action: 'created' | 'status_updated' | 'comment_added' | 'assigned_to_user';
   metadata: Record<string, any>;
   createdBy?: {
@@ -34,7 +35,7 @@ export interface AnonymousReport {
   coordinates: Coordinates;
   address: string;
   assignedTo?: string;
-  timeline: Array<ReportTimelineEntry>;
+  timeline: Array<TimelineEvent>;
   attachments: Array<Attachment>;
   note?: string;
   description: string;

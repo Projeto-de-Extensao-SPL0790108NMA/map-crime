@@ -4,7 +4,7 @@ import type { AnonymousReport } from '@/interfaces/report';
 import api from '@/lib/axios';
 
 const fetchReport = async (code: string): Promise<AnonymousReport | null> => {
-  const { data } = await api.get(`/reports/${code}/track`).catch((error) => {
+  const { data } = await api.get(`/reports/track/${code}`).catch((error) => {
     if (error.response?.status === 404) {
       return {
         data: null,

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 import { useReportByCode } from '@/hooks/use-get-report-by-code';
+import { ReportTimeline } from '@/components/report-timeline';
 
 export const Route = createFileRoute('/reports/$code')({
   component: RouteComponent,
@@ -59,5 +60,10 @@ function RouteComponent() {
     return <ReportNotFound code={params.code} />;
   }
 
-  return <ReportDetails report={data} />;
+  return (
+    <>
+      <ReportDetails report={data} />
+      {data.timeline.length > 0 && <ReportTimeline timeline={data.timeline} />}
+    </>
+  );
 }
