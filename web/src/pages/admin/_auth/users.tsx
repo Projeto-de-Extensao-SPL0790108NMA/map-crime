@@ -19,7 +19,6 @@ interface User {
   createdAt: string;
 }
 
-
 const mockUsers: Array<User> = Array.from({ length: 25 }, (_, i) => ({
   id: String(i + 1),
   name: `Usuário ${i + 1}`,

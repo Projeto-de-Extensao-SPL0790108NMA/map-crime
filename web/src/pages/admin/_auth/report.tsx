@@ -113,7 +113,6 @@ function Reports() {
 
   return (
     <div className="min-h-screen bg-muted p-8">
-
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-1">
@@ -143,7 +142,6 @@ function Reports() {
               >
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
-
                     <div className="flex items-start gap-4">
                       <div className="bg-muted rounded-full p-3">
                         <FileText className="w-6 h-6 text-[#2E3A59]" />
