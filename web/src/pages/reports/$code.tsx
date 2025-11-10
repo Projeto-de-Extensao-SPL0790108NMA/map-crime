@@ -7,7 +7,7 @@ import { ReportDetails } from './-components/report-details';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-import { useReportByCode } from '@/hooks/use-get-report-by-code';
+import { useGetReportByCode } from '@/hooks/use-get-report-by-code';
 import { ReportTimeline } from '@/components/report-timeline';
 
 export const Route = createFileRoute('/reports/$code')({
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/reports/$code')({
 
 function RouteComponent() {
   const params = Route.useParams();
-  const { isLoading, data, isError } = useReportByCode(params.code);
+  const { isLoading, data, isError } = useGetReportByCode(params.code);
 
   useEffect(() => {
     console.log('Denúncia carregada:', data);

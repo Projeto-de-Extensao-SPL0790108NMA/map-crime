@@ -29,7 +29,7 @@ const fetchReport = async (code: string): Promise<AnonymousReport | null> => {
   };
 };
 
-export function useReportByCode(code: string) {
+export function useGetReportByCode(code: string) {
   const query = useQuery({
     queryKey: ['report-by-code', code],
     queryFn: () => fetchReport(code),
