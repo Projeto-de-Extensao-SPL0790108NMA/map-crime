@@ -3,6 +3,7 @@ import { Pencil, Search, Trash2 } from 'lucide-react';
 
 import { useQuery } from '@tanstack/react-query';
 import { CreateUserSheet } from './-components/create-user-sheet';
+import { EditUserSheet } from './-components/edit-user-sheet';
 import type { User } from '@/interfaces/user';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -117,13 +118,15 @@ function Users() {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-muted-foreground hover:text-foreground"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
+                        <EditUserSheet user={user}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-foreground"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                        </EditUserSheet>
                         <Button
                           variant="ghost"
                           size="icon"
