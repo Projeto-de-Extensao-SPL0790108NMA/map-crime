@@ -108,6 +108,8 @@ function Dashboard() {
     },
   ];
 
+  const sign = metrics && metrics.resolutionRateComparison.difference >= 0 && '+';
+
   return (
     <div className="space-y-6">
       <DashboardStats stats={stats} isLoading={isLoadingMetrics} />
@@ -175,7 +177,7 @@ function Dashboard() {
                   )}
                   <div>
                     <p className="font-medium">
-                      {metrics.resolutionRateComparison.difference >= 0 && '+'}
+                      {sign}
                       {metrics.resolutionRateComparison.difference.toFixed(
                         2,
                       )}{' '}
@@ -183,6 +185,7 @@ function Dashboard() {
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Variação de{' '}
+                      {sign}
                       {metrics.resolutionRateComparison.percentageChange.toFixed(
                         1,
                       )}
