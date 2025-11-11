@@ -156,21 +156,20 @@ class TestUserDelete:
         response = client.delete(url)
         assert response.status_code == 401
     
-    def test_delete_user_authenticated(self, auth_client, db, create_groups):
-        """Testa exclusão por usuário autenticado."""
+    def test_delete_user_authenticated(self, admin_client, db, create_groups):
+        """Testa exclusão por usuário com permissão adequada."""
         # Cria um usuário para deletar
         user_to_delete = User.objects.create_user(
             email="delete@example.com",
             password="123456"
         )
         url = reverse("user-delete", kwargs={"pk": user_to_delete.pk})
-        response = auth_client.delete(url)
+        response = admin_client.delete(url)
         assert response.status_code == 204
         assert not User.objects.filter(pk=user_to_delete.pk).exists()
     
-    def test_delete_user_not_found(self, auth_client):
+    def test_delete_user_not_found(self, admin_client):
         """Testa exclusão de usuário inexistente."""
         url = reverse("user-delete", kwargs={"pk": 99999})
-        response = auth_client.delete(url)
+        response = admin_client.delete(url)
         assert response.status_code == 404
-
