@@ -96,10 +96,10 @@ class TestGroupDetail:
         # Detalhe deve incluir permissões
         assert "permissions" in response.data
     
-    def test_detail_group_not_found(self, auth_client):
+    def test_detail_group_not_found(self, admin_client):
         """Testa acesso a grupo inexistente."""
         url = reverse("group-detail", kwargs={"pk": 99999})
-        response = auth_client.get(url)
+        response = admin_client.get(url)
         assert response.status_code == 404
 
 
@@ -167,4 +167,3 @@ class TestGroupDelete:
         url = reverse("group-delete", kwargs={"pk": 99999})
         response = auth_client.delete(url)
         assert response.status_code == 404
-
