@@ -25,3 +25,21 @@ class DenunciaDetailView(RetrieveAPIView):
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+
+class DenunciaDetailProtocoloView(RetrieveAPIView):
+    """Permite recuperar uma denúncia usando o protocolo público."""
+    queryset = Denuncia.objects.all()
+    serializer_class = DenunciaDetailSerializer
+    permission_classes: ClassVar = [AllowAny]
+    lookup_field = "protocolo"
+    lookup_url_kwarg = "protocolo"
+
+    @swagger_auto_schema(
+        tags=["Denuncias"],
+        operation_description="Recupera os detalhes de uma denúncia usando o protocolo.",
+        responses={200: DenunciaDetailSerializer()},
+        operation_id="denuncia_detail_protocolo",
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
