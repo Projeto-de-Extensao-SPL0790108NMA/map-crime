@@ -1,7 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import { Link, createFileRoute } from '@tanstack/react-router';
+import { useState } from 'react';
 import { EyeIcon, SearchIcon } from 'lucide-react';
 
-import { useQuery } from '@tanstack/react-query';
 import type { ReportStatus } from '@/interfaces/report';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -29,23 +30,40 @@ interface Report {
   createdAt: string;
 }
 
-const fetchUsers = async () => {
+interface SearchParams {
+  search: string;
+  status: string;
+}
+
+const fetchUsers = async (params: SearchParams) => {
   const response = await api.get<{ reports: Array<Report> }>('/reports', {
     withCredentials: true,
+    params,
   });
 
   return response.data.reports;
 };
 
 function ReportsComponent() {
-  const { data: reports, isLoading } = useQuery({
-    queryKey: ['reports'],
-    queryFn: fetchUsers,
+  const [searchInput, setSearchInput] = useState<string>('');
+  const [statusInput, setStatusInput] = useState<string>('');
+
+  const [filters, applyFilters] = useState<SearchParams>({
+    search: '',
+    status: '',
   });
 
-  if (isLoading) {
-    return <div>Carregando denúncias...</div>;
-  }
+  const { data: reports, isLoading } = useQuery({
+    queryKey: ['reports', filters],
+    queryFn: () => fetchUsers(filters),
+  });
+
+  const handleFilter = () => {
+    applyFilters({
+      search: searchInput,
+      status: statusInput,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -67,20 +85,25 @@ function ReportsComponent() {
               <Input
                 placeholder="Buscar por código ou título..."
                 className="pl-9"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
               />
             </div>
-            <Select>
+            <Select value={statusInput} onValueChange={setStatusInput}>
               <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                <SelectItem value="pendente">Pendente</SelectItem>
-                <SelectItem value="em_analise">Em Análise</SelectItem>
-                <SelectItem value="resolvida">Resolvida</SelectItem>
-                <SelectItem value="arquivada">Arquivada</SelectItem>
+                <SelectItem value="pending">Pendente</SelectItem>
+                <SelectItem value="in_progress">Em Andamento</SelectItem>
+                <SelectItem value="resolved">Resolvida</SelectItem>
+                <SelectItem value="rejected">Rejeitado</SelectItem>
               </SelectContent>
             </Select>
+
+            <Button variant="outline" onClick={handleFilter}>
+              Filtrar
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -90,35 +113,49 @@ function ReportsComponent() {
           <CardTitle>Relatórios de Denúncias</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {reports &&
-              reports.map((report) => (
+          {isLoading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 6 }).map((_, index) => (
                 <div
-                  key={report.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h1 className="font-mono text-sm font-semibold">
-                        {report.code}
-                      </h1>
-                      <StatusBadge status={report.status} />
-                    </div>
-                    <h3 className="font-medium mt-1 truncate">
-                      {report.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Criada em {formatDate(report.createdAt)}
-                    </p>
-                  </div>
-                  <Button variant="ghost" size="icon" onClick={() => {}}>
-                    <Link to={'/admin/reports/$id'} params={{ id: report.id }}>
-                      <EyeIcon className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
+                  key={index}
+                  className="h-16 bg-muted/50 rounded-lg animate-pulse"
+                ></div>
               ))}
-          </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {reports &&
+                reports.map((report) => (
+                  <div
+                    key={report.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <h1 className="font-mono text-sm font-semibold">
+                          {report.code}
+                        </h1>
+                        <StatusBadge status={report.status} />
+                      </div>
+                      <h3 className="font-medium mt-1 truncate">
+                        {report.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Criada em {formatDate(report.createdAt)}
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => {}}>
+                      <Link
+                        to={'/admin/reports/$id'}
+                        params={{ id: report.id }}
+                      >
+                        <EyeIcon className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
