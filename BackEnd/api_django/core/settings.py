@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 # Base dir — usado para localizar dotenv_files/.env antes de chamar os.getenv
 BASE_DIR = Path(__file__).resolve().parent.parent
-DOTENV_PATH = BASE_DIR.parent / "dotenv_files" / ".env"
+DOTENV_PATH = BASE_DIR.parent / "dotenv_files" / ".env.dev"
 if DOTENV_PATH.exists():
     load_dotenv(DOTENV_PATH)
 else:
