@@ -8,28 +8,311 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './pages/__root';
+import { createFileRoute } from '@tanstack/react-router'
 
-export interface FileRoutesByFullPath {}
-export interface FileRoutesByTo {}
+import { Route as rootRouteImport } from './pages/__root'
+import { Route as ReportsLayoutRouteImport } from './pages/reports/layout'
+import { Route as IndexRouteImport } from './pages/index'
+import { Route as ReportsCreateRouteImport } from './pages/reports/create'
+import { Route as ReportsCodeRouteImport } from './pages/reports/$code'
+import { Route as AdminSignInRouteImport } from './pages/admin/sign-in'
+import { Route as AdminAuthLayoutRouteImport } from './pages/admin/_auth/layout'
+import { Route as AdminAuthIndexRouteImport } from './pages/admin/_auth/index'
+import { Route as AdminAuthUsersRouteImport } from './pages/admin/_auth/users'
+import { Route as AdminAuthReportRouteImport } from './pages/admin/_auth/report'
+import { Route as AdminAuthReportsIndexRouteImport } from './pages/admin/_auth/reports/index'
+import { Route as AdminAuthReportsIdRouteImport } from './pages/admin/_auth/reports/$id'
+
+const AdminRouteImport = createFileRoute('/admin')()
+
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsLayoutRoute = ReportsLayoutRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsCreateRoute = ReportsCreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => ReportsLayoutRoute,
+} as any)
+const ReportsCodeRoute = ReportsCodeRouteImport.update({
+  id: '/$code',
+  path: '/$code',
+  getParentRoute: () => ReportsLayoutRoute,
+} as any)
+const AdminSignInRoute = AdminSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuthLayoutRoute = AdminAuthLayoutRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuthIndexRoute = AdminAuthIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminAuthLayoutRoute,
+} as any)
+const AdminAuthUsersRoute = AdminAuthUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminAuthLayoutRoute,
+} as any)
+const AdminAuthReportRoute = AdminAuthReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => AdminAuthLayoutRoute,
+} as any)
+const AdminAuthReportsIndexRoute = AdminAuthReportsIndexRouteImport.update({
+  id: '/reports/',
+  path: '/reports/',
+  getParentRoute: () => AdminAuthLayoutRoute,
+} as any)
+const AdminAuthReportsIdRoute = AdminAuthReportsIdRouteImport.update({
+  id: '/reports/$id',
+  path: '/reports/$id',
+  getParentRoute: () => AdminAuthLayoutRoute,
+} as any)
+
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/reports': typeof ReportsLayoutRouteWithChildren
+  '/admin': typeof AdminAuthLayoutRouteWithChildren
+  '/admin/sign-in': typeof AdminSignInRoute
+  '/reports/$code': typeof ReportsCodeRoute
+  '/reports/create': typeof ReportsCreateRoute
+  '/admin/report': typeof AdminAuthReportRoute
+  '/admin/users': typeof AdminAuthUsersRoute
+  '/admin/': typeof AdminAuthIndexRoute
+  '/admin/reports/$id': typeof AdminAuthReportsIdRoute
+  '/admin/reports': typeof AdminAuthReportsIndexRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/reports': typeof ReportsLayoutRouteWithChildren
+  '/admin': typeof AdminAuthIndexRoute
+  '/admin/sign-in': typeof AdminSignInRoute
+  '/reports/$code': typeof ReportsCodeRoute
+  '/reports/create': typeof ReportsCreateRoute
+  '/admin/report': typeof AdminAuthReportRoute
+  '/admin/users': typeof AdminAuthUsersRoute
+  '/admin/reports/$id': typeof AdminAuthReportsIdRoute
+  '/admin/reports': typeof AdminAuthReportsIndexRoute
+}
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/reports': typeof ReportsLayoutRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
+  '/admin/_auth': typeof AdminAuthLayoutRouteWithChildren
+  '/admin/sign-in': typeof AdminSignInRoute
+  '/reports/$code': typeof ReportsCodeRoute
+  '/reports/create': typeof ReportsCreateRoute
+  '/admin/_auth/report': typeof AdminAuthReportRoute
+  '/admin/_auth/users': typeof AdminAuthUsersRoute
+  '/admin/_auth/': typeof AdminAuthIndexRoute
+  '/admin/_auth/reports/$id': typeof AdminAuthReportsIdRoute
+  '/admin/_auth/reports/': typeof AdminAuthReportsIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: never;
-  fileRoutesByTo: FileRoutesByTo;
-  to: never;
-  id: '__root__';
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/reports'
+    | '/admin'
+    | '/admin/sign-in'
+    | '/reports/$code'
+    | '/reports/create'
+    | '/admin/report'
+    | '/admin/users'
+    | '/admin/'
+    | '/admin/reports/$id'
+    | '/admin/reports'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/reports'
+    | '/admin'
+    | '/admin/sign-in'
+    | '/reports/$code'
+    | '/reports/create'
+    | '/admin/report'
+    | '/admin/users'
+    | '/admin/reports/$id'
+    | '/admin/reports'
+  id:
+    | '__root__'
+    | '/'
+    | '/reports'
+    | '/admin'
+    | '/admin/_auth'
+    | '/admin/sign-in'
+    | '/reports/$code'
+    | '/reports/create'
+    | '/admin/_auth/report'
+    | '/admin/_auth/users'
+    | '/admin/_auth/'
+    | '/admin/_auth/reports/$id'
+    | '/admin/_auth/reports/'
+  fileRoutesById: FileRoutesById
 }
-export interface RootRouteChildren {}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  ReportsLayoutRoute: typeof ReportsLayoutRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
+}
 
 declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {}
+  interface FileRoutesByPath {
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports/create': {
+      id: '/reports/create'
+      path: '/create'
+      fullPath: '/reports/create'
+      preLoaderRoute: typeof ReportsCreateRouteImport
+      parentRoute: typeof ReportsLayoutRoute
+    }
+    '/reports/$code': {
+      id: '/reports/$code'
+      path: '/$code'
+      fullPath: '/reports/$code'
+      preLoaderRoute: typeof ReportsCodeRouteImport
+      parentRoute: typeof ReportsLayoutRoute
+    }
+    '/admin/sign-in': {
+      id: '/admin/sign-in'
+      path: '/sign-in'
+      fullPath: '/admin/sign-in'
+      preLoaderRoute: typeof AdminSignInRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/_auth': {
+      id: '/admin/_auth'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminAuthLayoutRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/_auth/': {
+      id: '/admin/_auth/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminAuthIndexRouteImport
+      parentRoute: typeof AdminAuthLayoutRoute
+    }
+    '/admin/_auth/users': {
+      id: '/admin/_auth/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminAuthUsersRouteImport
+      parentRoute: typeof AdminAuthLayoutRoute
+    }
+    '/admin/_auth/report': {
+      id: '/admin/_auth/report'
+      path: '/report'
+      fullPath: '/admin/report'
+      preLoaderRoute: typeof AdminAuthReportRouteImport
+      parentRoute: typeof AdminAuthLayoutRoute
+    }
+    '/admin/_auth/reports/': {
+      id: '/admin/_auth/reports/'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminAuthReportsIndexRouteImport
+      parentRoute: typeof AdminAuthLayoutRoute
+    }
+    '/admin/_auth/reports/$id': {
+      id: '/admin/_auth/reports/$id'
+      path: '/reports/$id'
+      fullPath: '/admin/reports/$id'
+      preLoaderRoute: typeof AdminAuthReportsIdRouteImport
+      parentRoute: typeof AdminAuthLayoutRoute
+    }
+  }
 }
 
-const rootRouteChildren: RootRouteChildren = {};
+interface ReportsLayoutRouteChildren {
+  ReportsCodeRoute: typeof ReportsCodeRoute
+  ReportsCreateRoute: typeof ReportsCreateRoute
+}
+
+const ReportsLayoutRouteChildren: ReportsLayoutRouteChildren = {
+  ReportsCodeRoute: ReportsCodeRoute,
+  ReportsCreateRoute: ReportsCreateRoute,
+}
+
+const ReportsLayoutRouteWithChildren = ReportsLayoutRoute._addFileChildren(
+  ReportsLayoutRouteChildren,
+)
+
+interface AdminAuthLayoutRouteChildren {
+  AdminAuthReportRoute: typeof AdminAuthReportRoute
+  AdminAuthUsersRoute: typeof AdminAuthUsersRoute
+  AdminAuthIndexRoute: typeof AdminAuthIndexRoute
+  AdminAuthReportsIdRoute: typeof AdminAuthReportsIdRoute
+  AdminAuthReportsIndexRoute: typeof AdminAuthReportsIndexRoute
+}
+
+const AdminAuthLayoutRouteChildren: AdminAuthLayoutRouteChildren = {
+  AdminAuthReportRoute: AdminAuthReportRoute,
+  AdminAuthUsersRoute: AdminAuthUsersRoute,
+  AdminAuthIndexRoute: AdminAuthIndexRoute,
+  AdminAuthReportsIdRoute: AdminAuthReportsIdRoute,
+  AdminAuthReportsIndexRoute: AdminAuthReportsIndexRoute,
+}
+
+const AdminAuthLayoutRouteWithChildren = AdminAuthLayoutRoute._addFileChildren(
+  AdminAuthLayoutRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminAuthLayoutRoute: typeof AdminAuthLayoutRouteWithChildren
+  AdminSignInRoute: typeof AdminSignInRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAuthLayoutRoute: AdminAuthLayoutRouteWithChildren,
+  AdminSignInRoute: AdminSignInRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  ReportsLayoutRoute: ReportsLayoutRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
