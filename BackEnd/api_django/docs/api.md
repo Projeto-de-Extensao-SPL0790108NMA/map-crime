@@ -91,6 +91,7 @@ Estrutura idêntica aos endpoints de usuário, mas aplicando serializers de grup
 | GET | `/api/denuncias/` | Lista denúncias ordenadas por `created_at` desc. | `IsAuthenticated` + (`Admin` ou `User`) | Filtros: `status`, `categoria`, `created_from`, `created_to` (ISO-8601, aceita data ou data-hora). |
 | POST | `/api/denuncias/create/` | Cria denúncia. | Pública (AllowAny) | Aceita `multipart/form-data` ou JSON. Envie `categoria`, `descricao`, `latitude`, `longitude`, `status?`, `midia?`, `audio?`. |
 | GET | `/api/denuncias/<uuid>/` | Detalhes completos (`DenunciaDetailSerializer`). | `IsAuthenticated` + (`Admin` ou `User`) | |
+| GET | `/api/denuncias/protocolo/<protocolo>/` | Mesmas informações do detalhe, mas usando o protocolo público. | Pública | Pensado para consultas externas (ex.: usuário acompanha status). |
 | PUT/PATCH | `/api/denuncias/<uuid>/update/` | Atualiza campos. | Mesmo acima | |
 | DELETE | `/api/denuncias/<uuid>/delete/` | Exclui denúncia. | Mesmo acima | |
 | GET | `/api/denuncias/heatmap/` | Pontos leves para mapas de calor. | Pública | Query params: `bbox=minx,miny,maxx,maxy`, `start_date`, `end_date`, `limit`. Retorna `categoria`, `lat`, `lng`, `date`, `weight`. |
@@ -99,6 +100,11 @@ Estrutura idêntica aos endpoints de usuário, mas aplicando serializers de grup
 **Status possíveis**
 
 Valores definidos em `api.choice.STATUS_CHOICES`: `em_analise`, `aprovado`, `rejeitado`. Use-os nos filtros e ao atualizar `status`.
+
+**Detalhes e acompanhamento**
+
+- Tanto `/api/denuncias/<uuid>/` quanto `/api/denuncias/protocolo/<protocolo>/` retornam o objeto aninhado `usuario` (quando há vínculo), contendo `id`, `email`, `name`, `is_active` e `is_staff`.
+- A rota por protocolo tem `permission_classes = AllowAny`, permitindo que cidadãos consultem o status sem autenticação, desde que possuam o protocolo recebido no momento do registro.
 
 **Criando uma denúncia (multipart)**
 

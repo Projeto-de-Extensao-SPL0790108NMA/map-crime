@@ -32,6 +32,19 @@ def denuncia(db, denuncia_data):
     )
 
 
+@pytest.fixture
+def denuncia_with_user(db, denuncia_data, user):
+    """Cria denúncia associada a um usuário."""
+    location = Point(denuncia_data["longitude"], denuncia_data["latitude"], srid=4326)
+    return Denuncia.objects.create(
+        categoria=denuncia_data["categoria"],
+        descricao=denuncia_data["descricao"],
+        localizacao=location,
+        status=denuncia_data["status"],
+        usuario=user,
+    )
+
+
 @pytest.mark.django_db
 class TestDenunciaCreate:
     """Testes para criação de denúncias."""
@@ -167,6 +180,23 @@ class TestDenunciaDetail:
         url = reverse("denuncia_detail", kwargs={"pk": uuid4()})
         response = client.get(url)
         assert response.status_code == 404
+
+    def test_detail_denuncia_by_protocolo(self, client, denuncia):
+        """Permite buscar denúncia usando o protocolo público."""
+        url = reverse("denuncia_detail_protocolo", kwargs={"protocolo": denuncia.protocolo})
+        response = client.get(url)
+        assert response.status_code == 200
+        assert response.data["id"] == str(denuncia.id)
+        assert response.data["protocolo"] == denuncia.protocolo
+
+    def test_detail_denuncia_includes_user_payload(self, client, denuncia_with_user):
+        """Retorna dados do usuário vinculado."""
+        url = reverse("denuncia_detail", kwargs={"pk": denuncia_with_user.pk})
+        response = client.get(url)
+        assert response.status_code == 200
+        usuario = response.data["usuario"]
+        assert usuario["id"] == denuncia_with_user.usuario.id
+        assert usuario["email"] == denuncia_with_user.usuario.email
 
 
 @pytest.mark.django_db

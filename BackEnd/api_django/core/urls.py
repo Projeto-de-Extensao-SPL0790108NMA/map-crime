@@ -9,10 +9,11 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
 API_PUBLIC_URL = os.getenv('API_PUBLIC_URL', getattr(settings, 'API_PUBLIC_URL', None))
+API_TITLE = getattr(settings, "PROJECT_NAME", os.getenv("APP_NAME", "Base_Project_Django"))
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Base_Project_Django API",
+        title=f"{API_TITLE} API",
         default_version='v1',
         description="API docs",
         contact=openapi.Contact(email="suporte@prdl.shop"),
