@@ -12,6 +12,7 @@ import {
 
 import { useQuery } from '@tanstack/react-query';
 import { DashboardStats } from './-components/dashboard-stats';
+import { DashboardChartBar } from './-components/dashboard-chart-bar';
 import api from '@/lib/axios';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -193,6 +194,8 @@ function Dashboard() {
           </CardContent>
         </Card>
       )}
+
+      <DashboardChartBar />
     </div>
   );
 }
