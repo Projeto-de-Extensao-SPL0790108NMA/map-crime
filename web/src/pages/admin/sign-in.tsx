@@ -6,6 +6,7 @@ import z from 'zod/v3';
 
 import { ShieldIcon } from 'lucide-react';
 
+import { toast } from 'sonner';
 import {
   Card,
   CardContent,
@@ -58,12 +59,17 @@ function SignIn() {
       await auth.login(data);
     },
     onSuccess: async () => {
+      form.reset();
+      toast.success('Login realizado com sucesso!');
+
       await router.invalidate();
-      await router.navigate({ to: search.redirect || FALLBACK_REDIRECT }); // Refresh the current route
+      await router.navigate({ to: search.redirect || FALLBACK_REDIRECT });
     },
     onError: () => {
+      form.resetField('password');
       form.setError('email', { message: 'Email ou senha inválidos.' });
     },
+    retry: false,
   });
 
   const onSubmit = (data: FormSchema) => {
