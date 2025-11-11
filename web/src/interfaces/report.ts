@@ -12,7 +12,12 @@ export type ReportStatus = 'pending' | 'in_progress' | 'resolved' | 'rejected';
 
 export interface TimelineEvent {
   id: string;
-  action: 'created' | 'status_updated' | 'comment_added' | 'assigned_to_user';
+  action:
+    | 'created'
+    | 'updated_status'
+    | 'comment_added'
+    | 'assigned_to_user'
+    | 'marked_resolved';
   metadata: Record<string, any>;
   createdBy?: {
     name?: string;

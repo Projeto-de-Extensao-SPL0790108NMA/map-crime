@@ -1,4 +1,10 @@
-import { Clock, FileText, MessageSquare, UserCheck } from 'lucide-react';
+import {
+  CheckCheck,
+  Clock,
+  FileText,
+  MessageSquare,
+  UserCheck,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { TimelineEvent } from '@/interfaces/report';
@@ -13,12 +19,14 @@ const getEventIcon = (type: TimelineEvent['action']) => {
   switch (type) {
     case 'created':
       return <FileText className="h-4 w-4" />;
-    case 'status_updated':
+    case 'updated_status':
       return <Clock className="h-4 w-4" />;
     case 'comment_added':
       return <MessageSquare className="h-4 w-4" />;
     case 'assigned_to_user':
       return <UserCheck className="h-4 w-4" />;
+    case 'marked_resolved':
+      return <CheckCheck className="h-4 w-4" />;
   }
 };
 
@@ -26,12 +34,14 @@ const getEventTitle = (event: TimelineEvent) => {
   switch (event.action) {
     case 'created':
       return 'Denúncia Criada';
-    case 'status_updated':
+    case 'updated_status':
       return 'Status Atualizado';
     case 'comment_added':
       return 'Comentário Adicionado';
     case 'assigned_to_user':
       return 'Atribuído';
+    case 'marked_resolved':
+      return 'Marcado como Resolvido';
   }
 };
 
@@ -50,10 +60,10 @@ const UserDetails = ({ user }: { user: TimelineEvent['createdBy'] }) => {
 
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    pendente: 'Pendente',
-    em_analise: 'Em Análise',
-    resolvida: 'Resolvida',
-    arquivada: 'Arquivada',
+    pending: 'Pendente',
+    in_progress: 'Em Análise',
+    resolved: 'Resolvida',
+    rejected: 'Arquivada',
   };
   return labels[status] || status;
 };
@@ -103,7 +113,7 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
                     </p>
                   )}
 
-                  {event.action === 'status_updated' && (
+                  {event.action === 'updated_status' && (
                     <div className="space-y-2">
                       {event.createdBy && (
                         <p className="text-muted-foreground">
