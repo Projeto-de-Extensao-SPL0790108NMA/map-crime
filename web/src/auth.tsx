@@ -59,15 +59,10 @@ export function Provider({ children }: { children: React.ReactNode }) {
       '/auth/sign-in/email',
       {
         ...credentials,
-        callbackURL: window.location.origin + '/admin',
-      },
-      {
-        withCredentials: true,
-      },
+      }
     );
-
     setStoredUser(data.user);
-    setUser(user);
+    setUser(data.user);
   }, []);
 
   React.useEffect(() => {
