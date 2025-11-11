@@ -70,19 +70,16 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
       </CardHeader>
       <CardContent>
         <div className="relative space-y-6">
-          {/* Timeline line */}
           <div className="absolute left-5 top-2 bottom-2 w-px bg-border" />
 
           {sortedTimeline.map((event) => (
             <div key={event.id} className="relative flex gap-4 group">
-              {/* Icon */}
               <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-background bg-card shadow-sm">
                 <div className="rounded-full bg-primary/10 p-1.5 text-primary">
                   {getEventIcon(event.action)}
                 </div>
               </div>
 
-              {/* Content */}
               <div className="flex-1 space-y-2 pb-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
@@ -99,7 +96,6 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
                   </div>
                 </div>
 
-                {/* Event details */}
                 <div className="space-y-2 text-sm">
                   {event.action === 'created' && (
                     <p className="text-muted-foreground">
@@ -148,10 +144,10 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
                           Atribuído por: <UserDetails user={event.createdBy} />
                         </p>
                       )}
-                      {event.metadata.assignedUser && (
+                      {event.metadata.assignedToUser && (
                         <p className="text-muted-foreground">
                           Responsável:{' '}
-                          <UserDetails user={event.metadata.assignedUser} />
+                          <UserDetails user={event.metadata.assignedToUser} />
                         </p>
                       )}
                     </div>

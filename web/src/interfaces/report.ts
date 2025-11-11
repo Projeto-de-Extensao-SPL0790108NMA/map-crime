@@ -28,6 +28,26 @@ interface Attachment {
   size: number;
 }
 
+export interface Report {
+  id: string;
+  code: string;
+  status: ReportStatus;
+  title: string;
+  coordinates: Coordinates;
+  address: string;
+  assignedTo?: {
+    id: string;
+    name: string;
+    organization: string;
+  };
+  timeline: Array<TimelineEvent>;
+  attachments: Array<Attachment>;
+  note?: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AnonymousReport {
   code: string;
   status: ReportStatus;
