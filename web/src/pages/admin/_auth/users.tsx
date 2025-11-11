@@ -33,8 +33,7 @@ function Users() {
 
   return (
     <>
-      <div className="min-h-screen bg-muted p-8">
-        {/* Header */}
+      <div className="min-h-screen bg-muted">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-1">
