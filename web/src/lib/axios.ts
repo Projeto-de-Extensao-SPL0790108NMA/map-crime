@@ -7,15 +7,17 @@ const api = axios.create({
   baseURL: env.VITE_API_BASE_URL,
 });
 
-export default api;
-
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    if (error.response && error.response.status === 401) {
+  (error) => {
+    const isLoginRequest = error?.config?.url?.includes('/auth/sign-in');
+
+    if (error?.response?.status === 401 && !isLoginRequest) {
       setStoredUser(null);
-      window.location.href = '/admin';
+      window.location.href = '/admin/sign-in';
     }
     return Promise.reject(error);
   },
 );
+
+export default api;
