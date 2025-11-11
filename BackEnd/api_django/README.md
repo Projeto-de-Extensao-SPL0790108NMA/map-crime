@@ -10,7 +10,7 @@ API Django do projeto Mapa Crime: autenticação via Simple JWT, CRUD de usuári
 | `make` | Utilizado para orquestrar venv, migrations e serviços Docker. |
 | Docker + Docker Compose | Subir PostgreSQL, Redis e MailHog (`docker compose` v2 ou `docker-compose` v1). |
 | Git | Clonar o repositório. |
-| Arquivo `.env` | Configurado em `BackEnd/dotenv_files/.env`. Ajuste `POSTGRES_HOST` conforme roda local/containers. |
+| Arquivos `.env` | Copie `BackEnd/dotenv_files/.env-example` para `.env.dev` (run-dev) e `.env.prod` (run-docker). Ajuste `POSTGRES_HOST` conforme o ambiente. |
 
 > Dependências opcionais: `psql` CLI (para acessar o banco), `redis-cli` (debug) e ferramentas GIS caso vá manipular geodados fora da API.
 
@@ -44,8 +44,15 @@ Consulte esses arquivos sempre que precisar de instruções aprofundadas.
    git clone https://github.com/Projeto-de-Extensao-SPL0790108NMA/map-crime.git
    cd BackEnd/api_django
    ```
-2. **Configurar o `.env`**  
-   Garanta que `../dotenv_files/.env` existe. Ajuste as variáveis (ex.: `POSTGRES_HOST=127.0.0.1` para rodar localmente).
+2. **Configurar os `.env`**  
+   ```bash
+   cp ../dotenv_files/.env-example ../dotenv_files/.env.dev
+   cp ../dotenv_files/.env-example ../dotenv_files/.env.prod
+   ```
+   - Em `.env.dev` (usado por `make run-dev` e `make run-test`), deixe `POSTGRES_HOST="127.0.0.1"` e demais valores para desenvolvimento.
+   - Em `.env.prod` (usado por `make run-docker`), configure `POSTGRES_HOST="psql"` e credenciais de produção/container.
+   - Os campos `PROJECT_NAME`/`APP_NAME` definem o título mostrado no Swagger e em e-mails; ajuste-os conforme o branding desejado.
+   - `API_PUBLIC_URL` controla o host usado na geração do schema/documentação pública; defina-o para o domínio externo (ex.: `https://api.prdl.shop`) quando estiver em produção.
 3. **Criar o ambiente virtual e instalar dependências**
    ```bash
    make venv
@@ -65,10 +72,10 @@ make run-docker
 
 | Comando | Descrição |
 | --- | --- |
-| `make run-dev` | Ambiente recomendado: venv local + dependências em Docker. |
-| `make run-docker` | Sobe a stack inteira (inclui container do Django). |
-| `make docker-deps-up` | Apenas PostgreSQL, Redis e MailHog (use com venv local). |
-| `make run-test` | Executa pytest com variáveis do `.env`. |
+| `make run-dev` | Ambiente recomendado: usa `.env.dev`, sobe deps (psql/redis/mailhog) e roda Django via venv. |
+| `make run-docker` | Usa `.env.prod` e sobe a stack inteira (containers Django + dependências). |
+| `make docker-deps-up` | Apenas PostgreSQL, Redis e MailHog lendo `.env.dev` (para uso com o venv local). |
+| `make run-test` | Executa pytest carregando as variáveis de `.env.dev`. |
 | `make lint` / `make lint-fix` | Verifica/corrige estilo com Ruff. |
 | `make docker-reset` | Para containers e remove volumes (zera o banco). |
 | `make docker-clean` | Remove containers, volumes e imagens relacionados. |
