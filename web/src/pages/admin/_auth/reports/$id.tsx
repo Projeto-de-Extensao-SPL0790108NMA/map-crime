@@ -106,7 +106,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-muted p-8 space-y-6 flex gap-4">
+    <div className="min-h-screen bg-muted py-8 space-y-6 flex flex-col md:flex-row gap-4">
       <div className="flex-1 space-y-6">
         <Card>
           <CardHeader>
@@ -252,7 +252,7 @@ function RouteComponent() {
           </CardContent>
         </Card>
       </div>
-      <div className="w-100 space-y-6">
+      <div className="w-full md:w-1/2 lg:w-1/3 min-w-70 lg:max-w-100 space-y-6">
         {['pending', 'in_progress'].includes(report.status) && (
           <>
             <Card>

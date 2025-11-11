@@ -83,7 +83,7 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
   );
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-xl">Linha do Tempo</CardTitle>
       </CardHeader>
