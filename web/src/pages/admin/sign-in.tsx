@@ -47,7 +47,6 @@ export const Route = createFileRoute('/admin/sign-in')({
 function SignIn() {
   const router = useRouter();
   const search = Route.useSearch();
-  const navigate = Route.useNavigate();
   const { auth } = Route.useRouteContext();
 
   const form = useForm<FormSchema>({
