@@ -1,4 +1,4 @@
-import { Link, useRouter } from '@tanstack/react-router';
+import { Link, useLocation, useRouter } from '@tanstack/react-router';
 
 import {
   BarChart3Icon,
@@ -36,11 +36,13 @@ function NavigationLink({
   path: string;
   onClick?: () => void;
 }) {
-  const active = location.pathname === path;
+  const location = useLocation();
+
+
   return (
     <Link to={path}>
       <Button
-        variant={active ? 'secondary' : 'ghost'}
+        variant={location.pathname === path ? 'secondary' : 'ghost'}
         className="w-full justify-start"
         onClick={onClick}
       >
