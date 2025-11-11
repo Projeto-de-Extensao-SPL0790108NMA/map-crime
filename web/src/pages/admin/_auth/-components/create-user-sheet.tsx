@@ -35,7 +35,7 @@ type FormSchema = z.infer<typeof formSchema>;
 
 export function CreateUserSheet() {
   const closeSheetRef = useRef<HTMLButtonElement>(null);
-  const { register, handleSubmit, formState } = useForm<FormSchema>({
+  const { register, handleSubmit, formState, ...form } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -58,6 +58,7 @@ export function CreateUserSheet() {
     onSuccess: () => {
       toast.success('Usuário criado com sucesso!');
       closeSheetRef.current?.click();
+      form.reset();
     },
     onError: (error) => {
       if (
