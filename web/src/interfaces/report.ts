@@ -17,7 +17,8 @@ export interface TimelineEvent {
     | 'updated_status'
     | 'comment_added'
     | 'assigned_to_user'
-    | 'marked_resolved';
+    | 'marked_resolved'
+    | 'marked_rejected';
   metadata: Record<string, any>;
   createdBy?: {
     name?: string;

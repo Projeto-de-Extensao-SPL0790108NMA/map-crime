@@ -1,4 +1,5 @@
 import {
+  Ban,
   CheckCheck,
   Clock,
   FileText,
@@ -27,6 +28,10 @@ const getEventIcon = (type: TimelineEvent['action']) => {
       return <UserCheck className="h-4 w-4" />;
     case 'marked_resolved':
       return <CheckCheck className="h-4 w-4" />;
+    case 'marked_rejected':
+      return <Ban className="h-4 w-4" />;
+    default:
+      return <FileText className="h-4 w-4" />;
   }
 };
 
@@ -42,6 +47,10 @@ const getEventTitle = (event: TimelineEvent) => {
       return 'Atribuído';
     case 'marked_resolved':
       return 'Marcado como Resolvido';
+    case 'marked_rejected':
+      return 'Marcado como Rejeitado';
+    default:
+      return 'Evento';
   }
 };
 
@@ -158,6 +167,26 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
                         <p className="text-muted-foreground">
                           Responsável:{' '}
                           <UserDetails user={event.metadata.assignedToUser} />
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {event.action === 'marked_resolved' && (
+                    <div className="space-y-1">
+                      {event.createdBy && (
+                        <p className="text-muted-foreground">
+                          Resolvida por: <UserDetails user={event.createdBy} />
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {event.action === 'marked_rejected' && (
+                    <div className="space-y-1">
+                      {event.createdBy && (
+                        <p className="text-muted-foreground">
+                          Rejeitada por: <UserDetails user={event.createdBy} />
                         </p>
                       )}
                     </div>
