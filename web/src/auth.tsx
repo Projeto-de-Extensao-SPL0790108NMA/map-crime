@@ -43,7 +43,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
   const isAuthenticated = !!user;
 
   const logout = React.useCallback(async () => {
-    await api.post(
+    api.post(
       '/auth/sign-out',
       {},
       {

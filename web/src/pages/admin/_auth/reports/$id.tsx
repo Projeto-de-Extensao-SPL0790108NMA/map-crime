@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import {
   Ban,
@@ -6,11 +6,14 @@ import {
   CheckCheck,
   FileTextIcon,
   Loader,
-  MapPinIcon,
+  Loader2,
   MessageSquareIcon,
-  UserIcon,
 } from 'lucide-react';
 import { Separator } from '@radix-ui/react-separator';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { Dialog } from '@radix-ui/react-dialog';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 import { AssignReportCard } from './-components/assign-report-card';
 import type { Report } from '@/interfaces/report';
 import api from '@/lib/axios';
@@ -32,12 +35,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ReportTimeline } from '@/components/report-timeline';
+import { env } from '@/env';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/admin/_auth/reports/$id')({
   component: RouteComponent,
 });
 
-async function getReport(id: string): Promise<Report> {
+async function getReport(id: string): Promise<Report | null> {
   const response = await api
     .get(`/reports/${id}`, {
       withCredentials: true,
@@ -50,16 +56,50 @@ async function getReport(id: string): Promise<Report> {
       throw error;
     });
 
-  return response?.data?.report;
+  if (!response?.data?.report) {
+    return null;
+  }
+
+  const { latitude, longitude, ...rest } = response.data.report;
+
+  return { ...rest, coordinates: { lat: latitude, lng: longitude } };
 }
 
 function RouteComponent() {
   const params = Route.useParams();
+  const queryClient = useQueryClient();
+  const [status, setStatus] = useState('');
 
   const { data: report } = useQuery({
     queryKey: ['report', params.id],
     queryFn: () => getReport(params.id),
   });
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: env.VITE_GOOGLE_MAPS_API_KEY,
+  });
+
+  const updateStatus = useCallback(async () => {
+    if (!status) {
+      toast.error('Por favor, selecione um status para atualizar.');
+      return;
+    }
+
+    try {
+      await api.patch(
+        `/reports/${params.id}/status`,
+        {
+          status,
+        },
+        { withCredentials: true },
+      );
+
+      toast.success('Status atualizado com sucesso!');
+      queryClient.invalidateQueries({ queryKey: ['report', params.id] });
+    } catch (error) {
+      toast.error('Erro ao atualizar o status. Tente novamente.');
+    }
+  }, [status]);
 
   if (!report) {
     return <h1>error</h1>;
@@ -166,49 +206,103 @@ function RouteComponent() {
         </Card>
 
         <Card>
-          <CardHeader></CardHeader>
           <CardContent>
-            <h1>Mapa aqui</h1>
+            <div>
+              {loadError ? (
+                <div className="p-4 text-sm text-red-500">
+                  Erro ao carregar o mapa.
+                </div>
+              ) : !isLoaded ? (
+                <div
+                  className="flex items-center justify-center"
+                  style={{ height: 400 }}
+                >
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                </div>
+              ) : (
+                <GoogleMap
+                  mapContainerStyle={{
+                    width: '100%',
+                    height: '500px',
+                    borderRadius: '0.75rem',
+                  }}
+                  center={{
+                    lat: -3.119,
+                    lng: -60.0217,
+                  }}
+                  zoom={15}
+                  options={{
+                    disableDefaultUI: true,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    minZoom: 15,
+                    maxZoom: 15,
+                  }}
+                >
+                  <Marker
+                    position={{
+                      lat: -3.119,
+                      lng: -60.0217,
+                    }}
+                    animation={google.maps.Animation.BOUNCE}
+                  />
+                </GoogleMap>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
-      <div className="w-80 space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Atualizar Status</CardTitle>
-            <CardDescription>
-              Atualize o status deste relatório.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Select>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="atualizar status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="in_progress">
-                  <Loader />
-                  Em progresso
-                </SelectItem>
-                <SelectItem value="resolved">
-                  <CheckCheck />
-                  Resolvido
-                </SelectItem>
-                <SelectItem value="rejected">
-                  <Ban />
-                  Rejeitado
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
+      <div className="w-100 space-y-6">
+        {['pending', 'in_progress'].includes(report.status) && (
+          <>
+            <Card>
+              <CardHeader>
+                <CardTitle>Atualizar Status</CardTitle>
+                <CardDescription>
+                  Atualize o status deste relatório.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Select value={status} onValueChange={setStatus}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="atualizar status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in_progress">
+                      <Loader />
+                      Em Andamento
+                    </SelectItem>
+                    <SelectItem value="resolved">
+                      <CheckCheck />
+                      Resolvido
+                    </SelectItem>
+                    <SelectItem value="rejected">
+                      <Ban />
+                      Rejeitado
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
 
-        <AssignReportCard
-          reportId={params.id}
-          currentAssignedTo={report.assignedTo?.id}
-        />
+                <Button
+                  className="mt-4 w-full"
+                  variant="default"
+                  onClick={updateStatus}
+                >
+                  Atualizar Status
+                </Button>
+              </CardContent>
+            </Card>
 
-        <ReportTimeline timeline={report.timeline} />
+            <AssignReportCard
+              reportId={params.id}
+              currentAssignedTo={report.assignedTo?.id}
+            />
+          </>
+        )}
+
+        {report.timeline.length > 0 && (
+          <ReportTimeline timeline={report.timeline} />
+        )}
       </div>
     </div>
   );

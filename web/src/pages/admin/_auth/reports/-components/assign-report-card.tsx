@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { User } from '@/interfaces/user';
@@ -39,6 +39,7 @@ export function AssignReportCard({
   });
 
   const [selectedUser, setSelectedUser] = useState(currentAssignedTo);
+  const queryClient = useQueryClient();
 
   const handleAssign = async () => {
     if (!selectedUser) {
@@ -56,6 +57,7 @@ export function AssignReportCard({
       );
 
       toast.success('Relatório atribuído com sucesso!');
+      queryClient.invalidateQueries({ queryKey: ['report', reportId] });
     } catch (error) {
       toast.error('Erro ao atribuir o relatório. Tente novamente.');
     }
