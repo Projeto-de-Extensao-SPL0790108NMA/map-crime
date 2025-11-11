@@ -10,7 +10,9 @@ VENV := $(PROJECT_DIR)/venv
 PY := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 MANAGE := $(PY) $(PROJECT_DIR)/manage.py
-ENV_FILE := $(PROJECT_DIR)/../dotenv_files/.env
+ENV_DIR := $(PROJECT_DIR)/../dotenv_files
+ENV_FILE_DEV := $(ENV_DIR)/.env.dev
+ENV_FILE_PROD := $(ENV_DIR)/.env.prod
 API_PORT ?= 8000
 
 # --- Detecção do Docker Compose ---
@@ -36,7 +38,7 @@ help:
 	@echo ""
 	@echo "--- Desenvolvimento Local (venv) ---"
 	@echo "  make venv        -> Cria/atualiza o ambiente virtual e instala dependências"
-	@echo "  make run-dev     -> [Recomendado] Sobe DB/Redis (Docker), espera o DB, e roda a app localmente (venv)"
+	@echo "  make run-dev     -> [Recomendado] Usa dotenv_files/.env.dev, sobe DB/Redis (Docker) e roda a app localmente (venv)"
 	@echo "  make run-test    -> Roda os testes (pytest) no ambiente local (venv)"
 	@echo "  make lint        -> Executa Ruff (lint) em todo o projeto"
 	@echo "  make lint-fix    -> Executa Ruff com --fix para corrigir problemas simples"
@@ -44,7 +46,7 @@ help:
 	@echo "  make gen-secret  -> Gera e IMPRIME um SECRET_KEY novo no terminal"
 	@echo ""
 	@echo "--- Gerenciamento Docker (stack completa) ---"
-	@echo "  make run-docker  -> Sobe toda a stack via docker-compose (build + up -d)"
+	@echo "  make run-docker  -> Usa dotenv_files/.env.prod e sobe toda a stack via docker-compose (build + up -d)"
 	@echo "  make docker-stop   -> Para os containers do projeto"
 	@echo "  make docker-start  -> Inicia os containers parados do projeto"
 	@echo "  make docker-restart-> Reinicia os containers do projeto (aplica mudanças no compose.yml)"
@@ -61,26 +63,38 @@ venv:
 # 2. 'docker-deps-up' SOBE e ESPERA o banco de dados e o redis
 # 3. O resto do comando (migrate, daphne) só roda DEPOIS que o 'docker-deps-up' terminar.
 run-dev: venv docker-deps-up
+	@if [ ! -f $(ENV_FILE_DEV) ]; then \
+		echo "Arquivo $(ENV_FILE_DEV) não encontrado. Copie dotenv_files/.env-example para .env.dev"; \
+		exit 1; \
+	fi
 	@echo "📦 Carregando variáveis de ambiente e aplicando migrations..."
 	@set -o allexport; \
-	if [ -f $(ENV_FILE) ]; then . $(ENV_FILE); fi; \
+	. $(ENV_FILE_DEV); \
 	set +o allexport; \
 	\
 	$(MANAGE) makemigrations --noinput; \
 	$(MANAGE) migrate --noinput; \
 	$(MANAGE) collectstatic --noinput; \
-	$(MANAGE) seed; \
-	\
+	$(MANAGE) seed;
+
 	@echo "🌐 Iniciando Daphne localmente na porta $(API_PORT)... (Ctrl+C para parar)"; \
 	export DJANGO_SETTINGS_MODULE=core.settings; \
 	$(VENV)/bin/daphne -b 0.0.0.0 -p $(API_PORT) core.asgi:application
 
 # run-docker: sobe toda a stack (inclui django container)
 run-docker:
-	$(DC) up -d --build
+	@if [ ! -f $(ENV_FILE_PROD) ]; then \
+		echo "Arquivo $(ENV_FILE_PROD) não encontrado. Copie dotenv_files/.env-example para .env.prod"; \
+		exit 1; \
+	fi
+	DOTENV_FILE=$(ENV_FILE_PROD) $(DC) up -d --build
 
 run-test: venv
-	@set -o allexport; if [ -f $(ENV_FILE) ]; then . $(ENV_FILE); fi; set +o allexport; \
+	@if [ ! -f $(ENV_FILE_DEV) ]; then \
+		echo "Arquivo $(ENV_FILE_DEV) não encontrado. Copie dotenv_files/.env-example para .env.dev"; \
+		exit 1; \
+	fi
+	@set -o allexport; . $(ENV_FILE_DEV); set +o allexport; \
 	$(VENV)/bin/pytest
 
 lint: venv
@@ -105,17 +119,21 @@ gen-secret:
 
 # NOVO ALVO: Sobe os serviços de dependência (DB, Redis) E ESPERA por eles
 docker-deps-up:
+	@if [ ! -f $(ENV_FILE_DEV) ]; then \
+		echo "Arquivo $(ENV_FILE_DEV) não encontrado. Copie dotenv_files/.env-example para .env.dev"; \
+		exit 1; \
+	fi
 	@echo "🚀 Subindo PostgreSQL, Redis e MailHog via Docker Compose..."
-	$(DC) up -d psql redis mailhog
+	DOTENV_FILE=$(ENV_FILE_DEV) $(DC) up -d psql redis mailhog
 
 	@echo "📦 Carregando variáveis de ambiente para verificação do DB..."
 	@set -o allexport; \
-	if [ -f $(ENV_FILE) ]; then . $(ENV_FILE); fi; \
+	. $(ENV_FILE_DEV); \
 	set +o allexport; \
 	\
 	echo "⏳ Aguardando PostgreSQL ficar pronto..."; \
 	count=0; \
-	while ! $(DC) exec -T psql sh -c "psql -U $${POSTGRES_USER} -d $${POSTGRES_DB} -c '\q'" >/dev/null 2>&1; do \
+	while ! DOTENV_FILE=$(ENV_FILE_DEV) $(DC) exec -T psql sh -c "psql -U $${POSTGRES_USER} -d $${POSTGRES_DB} -c '\q'" >/dev/null 2>&1; do \
 		count=$$((count+1)); \
 		if [ $$count -gt 30 ]; then \
 			echo '❌ PostgreSQL falhou em iniciar após 30 segundos.'; \
@@ -125,7 +143,9 @@ docker-deps-up:
 		echo "  (tentativa $$count/30) Aguardando..."; \
 		sleep 1; \
 	done; \
-	echo "✅ PostgreSQL está pronto para conexões!"
+	echo "✅ PostgreSQL está pronto para conexões!"; \
+	echo "⏳ Aguardando 2s para estabilizar..."; \
+	sleep 2
 
 # --- Comandos Docker Refatorados ---
 

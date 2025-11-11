@@ -2,7 +2,8 @@ services:
   django:
     container_name: django
     build: .
-    env_file: ../dotenv_files/.env
+    env_file:
+      - ${DOTENV_FILE:-../dotenv_files/.env.dev}
     environment:
       - STATIC_ROOT=/data/web/staticfiles
     expose:
@@ -26,7 +27,7 @@ services:
     volumes:
       - database_volume:/var/lib/postgresql/data/
     env_file:
-      - ../dotenv_files/.env
+      - ${DOTENV_FILE:-../dotenv_files/.env.dev}
     networks:
       - backend
 
