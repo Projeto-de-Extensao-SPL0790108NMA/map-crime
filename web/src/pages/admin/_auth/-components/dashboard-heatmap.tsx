@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
+import { useEffect, useRef, useState } from 'react';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { useQuery } from '@tanstack/react-query';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { env } from "@/env";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/axios";
+} from '@/components/ui/card';
+import { env } from '@/env';
+import api from '@/lib/axios';
 
 interface HeatmapPoint {
   lat: number;
@@ -17,28 +17,30 @@ interface HeatmapPoint {
   weight: number;
 }
 
-const libraries: Array<"visualization"> = ["visualization"];
+const libraries: Array<'visualization'> = ['visualization'];
 
 const mapContainerStyle = {
-  width: "100%",
-  height: "500px",
+  width: '100%',
+  height: '500px',
 };
 
 const center = {
   lat: -3.1019,
-  lng: -60.0250,
+  lng: -60.025,
 };
 
 export function DashboardHeatmap() {
-  
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: env.VITE_GOOGLE_MAPS_API_KEY,
     libraries,
   });
-  const { data: heatmapData, error } = useQuery<HeatmapPoint[]>({
-    queryKey: ["heatmapData"],
+  const { data: heatmapData, error } = useQuery<Array<HeatmapPoint>>({
+    queryKey: ['heatmapData'],
     queryFn: async () => {
-      const { data } = await api.get<{ points: HeatmapPoint[] }>("/dashboard/heatmap", { withCredentials: true });
+      const { data } = await api.get<{ points: Array<HeatmapPoint> }>(
+        '/dashboard/heatmap',
+        { withCredentials: true },
+      );
       return data.points;
     },
   });
@@ -62,13 +64,14 @@ export function DashboardHeatmap() {
   }
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const heatmapLayerRef = useRef<google.maps.visualization.HeatmapLayer | null>(null);
+  const heatmapLayerRef = useRef<google.maps.visualization.HeatmapLayer | null>(
+    null,
+  );
 
   useEffect(() => {
     if (map && isLoaded && heatmapData && heatmapData.length > 0) {
       const googleHeatmapData = heatmapData.map(
-        (point) =>
-          new google.maps.LatLng(point.lat, point.lng)
+        (point) => new google.maps.LatLng(point.lat, point.lng),
       );
 
       if (heatmapLayerRef.current) {
@@ -80,27 +83,27 @@ export function DashboardHeatmap() {
         map: map,
       });
 
-      heatmap.set("radius", 12);
-      heatmap.set("opacity", 0.5);
+      heatmap.set('radius', 12);
+      heatmap.set('opacity', 0.5);
 
       const gradient = [
-        "rgba(0, 255, 255, 0)",
-        "rgba(0, 255, 255, 1)",
-        "rgba(0, 191, 255, 1)",
-        "rgba(0, 127, 255, 1)",
-        "rgba(0, 63, 255, 1)",
-        "rgba(0, 0, 255, 1)",
-        "rgba(0, 0, 223, 1)",
-        "rgba(0, 0, 191, 1)",
-        "rgba(0, 0, 159, 1)",
-        "rgba(0, 0, 127, 1)",
-        "rgba(63, 0, 91, 1)",
-        "rgba(127, 0, 63, 1)",
-        "rgba(191, 0, 31, 1)",
-        "rgba(255, 0, 0, 1)",
+        'rgba(0, 255, 255, 0)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(0, 127, 255, 1)',
+        'rgba(0, 63, 255, 1)',
+        'rgba(0, 0, 255, 1)',
+        'rgba(0, 0, 223, 1)',
+        'rgba(0, 0, 191, 1)',
+        'rgba(0, 0, 159, 1)',
+        'rgba(0, 0, 127, 1)',
+        'rgba(63, 0, 91, 1)',
+        'rgba(127, 0, 63, 1)',
+        'rgba(191, 0, 31, 1)',
+        'rgba(255, 0, 0, 1)',
       ];
 
-      heatmap.set("gradient", gradient);
+      heatmap.set('gradient', gradient);
 
       heatmapLayerRef.current = heatmap;
     }
@@ -163,8 +166,7 @@ export function DashboardHeatmap() {
             mapTypeControl: true,
             fullscreenControl: true,
           }}
-        >
-        </GoogleMap>
+        ></GoogleMap>
       </CardContent>
     </Card>
   );

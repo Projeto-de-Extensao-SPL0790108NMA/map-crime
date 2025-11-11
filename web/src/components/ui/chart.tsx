@@ -134,10 +134,16 @@ function ChartTooltipContent({
     const [item] = payload;
     const key = `${labelKey || item.dataKey || item.name || 'value'}`;
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
-    const value =
-      !labelKey && typeof label === 'string'
-        ? config[label]?.label || label
-        : itemConfig?.label;
+    const value = (() => {
+      if (labelKey) return itemConfig?.label ?? label;
+
+      if (typeof label === 'string' || typeof label === 'number') {
+        const labelStr = String(label);
+        return labelStr in config ? (config[labelStr].label ?? label) : label;
+      }
+
+      return itemConfig?.label ?? label;
+    })();
 
     if (labelFormatter) {
       return (

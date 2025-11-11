@@ -55,12 +55,9 @@ export function Provider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = React.useCallback(async (credentials: Credentials) => {
-    const { data } = await api.post(
-      '/auth/sign-in/email',
-      {
-        ...credentials,
-      }
-    );
+    const { data } = await api.post('/auth/sign-in/email', {
+      ...credentials,
+    });
     setStoredUser(data.user);
     setUser(data.user);
   }, []);
