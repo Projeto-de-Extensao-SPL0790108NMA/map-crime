@@ -16,7 +16,7 @@ export interface TimelineEvent {
   metadata: Record<string, any>;
   createdBy?: {
     name?: string;
-    entity: string;
+    organization: string;
   };
   createdAt: string;
 }

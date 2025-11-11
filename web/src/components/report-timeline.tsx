@@ -43,7 +43,7 @@ const UserDetails = ({ user }: { user: TimelineEvent['createdBy'] }) => {
       {user.name && (
         <span className="font-medium text-foreground">{user.name} - </span>
       )}
-      <span className="font-medium text-foreground">{user.entity}</span>
+      <span className="font-medium text-foreground">{user.organization}</span>
     </>
   );
 };

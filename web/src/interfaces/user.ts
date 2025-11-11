@@ -4,6 +4,6 @@ export interface User {
   email: string;
   status: 'suspended' | 'active' | 'inactive';
   role: 'admin' | 'user';
-  entity: string;
+  organization: string;
   createdAt: string;
 }

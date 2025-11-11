@@ -68,7 +68,7 @@ describe('useReportByCode', () => {
         longitude: -46.6333,
         address: 'São Paulo, SP',
         assignedTo: {
-          entity: 'Police Department',
+          organization: 'Police Department',
         },
         timeline: [],
         attachments: [],

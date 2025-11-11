@@ -122,7 +122,7 @@ export function EditUserSheet({ user, children }: EditUserSheetProps) {
               )}
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="entity">Organização</Label>
+              <Label htmlFor="organization">Organização</Label>
               <Input {...register('organization')} />
               {formState.errors.organization && (
                 <p className="text-destructive text-sm">
