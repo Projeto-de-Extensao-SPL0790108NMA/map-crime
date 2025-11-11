@@ -15,7 +15,7 @@ interface AuthenticatedUser {
 export interface AuthContext {
   isAuthenticated: boolean;
   login: (credentials: Credentials) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
   user: AuthenticatedUser | null;
 }
 
@@ -42,7 +42,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
   );
   const isAuthenticated = !!user;
 
-  const logout = React.useCallback(async () => {
+  const logout = React.useCallback(() => {
     api.post(
       '/auth/sign-out',
       {},
