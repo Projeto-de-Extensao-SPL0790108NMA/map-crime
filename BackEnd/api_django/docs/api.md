@@ -96,6 +96,7 @@ Estrutura idêntica aos endpoints de usuário, mas aplicando serializers de grup
 | DELETE | `/api/denuncias/<uuid>/delete/` | Exclui denúncia. | Mesmo acima | |
 | GET | `/api/denuncias/heatmap/` | Pontos leves para mapas de calor. | Pública | Query params: `bbox=minx,miny,maxx,maxy`, `start_date`, `end_date`, `limit`. Retorna `categoria`, `lat`, `lng`, `date`, `weight`. |
 | GET | `/api/denuncias/relatorios/` | Exporta CSV/XLSX/DOCX com resumo por status. | `IsAuthenticated` + (`Admin` ou `User`) | Params: `formato=csv|xlsx|docs`, `data_inicio`, `data_fim`. Retorna arquivo para download. |
+| GET | `/api/denuncias/<uuid>/history/` | Histórico de alterações nos campos `status` e `usuario`, com valores anterior/novo e autor da alteração. | `IsAuthenticated` + (`Admin` ou `User`) | Útil para auditoria e acompanhamento. |
 
 **Status possíveis**
 
@@ -105,6 +106,7 @@ Valores definidos em `api.choice.STATUS_CHOICES`: `em_analise`, `aprovado`, `rej
 
 - Tanto `/api/denuncias/<uuid>/` quanto `/api/denuncias/protocolo/<protocolo>/` retornam o objeto aninhado `usuario` (quando há vínculo), contendo `id`, `email`, `name`, `is_active` e `is_staff`.
 - A rota por protocolo tem `permission_classes = AllowAny`, permitindo que cidadãos consultem o status sem autenticação, desde que possuam o protocolo recebido no momento do registro.
+- A rota `/api/denuncias/<uuid>/history/` informa quem alterou o responsável (`usuario`) ou o `status`, mostrando valores anterior/novo e o timestamp da alteração.
 
 **Criando uma denúncia (multipart)**
 

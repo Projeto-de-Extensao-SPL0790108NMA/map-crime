@@ -4,6 +4,7 @@ import uuid
 import ulid
 from django.contrib.gis.db import models as geomodels
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from accounts.models import User
 
@@ -36,6 +37,7 @@ class Denuncia(models.Model):
     midia = models.FileField(upload_to=denuncia_midia_upload_path, blank=True, null=True)
     audio = models.FileField(upload_to=denuncia_audio_upload_path, blank=True, null=True)
     status = models.CharField(max_length=20, choices=choice.STATUS_CHOICES.choices, default=choice.STATUS_CHOICES.EM_ANALISE)
+    history = HistoricalRecords()
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

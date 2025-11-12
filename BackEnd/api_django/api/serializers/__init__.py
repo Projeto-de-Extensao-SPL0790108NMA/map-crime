@@ -11,6 +11,9 @@ from .denuncia import (
     DenunciaDetailSerializer as DenunciaDetailSerializer,
 )
 from .denuncia import (
+    DenunciaHistoryEntrySerializer as DenunciaHistoryEntrySerializer,
+)
+from .denuncia import (
     DenunciaListSerializer as DenunciaListSerializer,
 )
 from .denuncia import (

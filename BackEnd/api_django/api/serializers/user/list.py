@@ -17,6 +17,7 @@ class UserListSerializer(serializers.ModelSerializer):
             # adicione outros campos reais do model, ex:
             "name",
             "email",   # se duplicado com USERNAME_FIELD, mantenha só o necessário
+            "organization",
             "is_active",
             "is_staff",
         )

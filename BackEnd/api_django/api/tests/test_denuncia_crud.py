@@ -274,3 +274,42 @@ class TestDenunciaDelete:
         response = admin_client.delete(url)
         assert response.status_code == 204
         assert not Denuncia.objects.filter(pk=denuncia.pk).exists()
+
+
+@pytest.mark.django_db
+class TestDenunciaHistory:
+    """Testes para o endpoint de histórico de alterações de denúncias."""
+
+    def test_history_requires_auth(self, client, denuncia):
+        url = reverse("denuncia_history", kwargs={"pk": denuncia.pk})
+        response = client.get(url)
+        assert response.status_code == 401
+
+    def test_history_records_status_change(self, auth_client, denuncia):
+        url_update = reverse("denuncia_update", kwargs={"pk": denuncia.pk})
+        response = auth_client.patch(url_update, {"status": "aprovado"}, format="json")
+        assert response.status_code == 200
+
+        url_history = reverse("denuncia_history", kwargs={"pk": denuncia.pk})
+        history_response = auth_client.get(url_history)
+        assert history_response.status_code == 200
+        assert len(history_response.data) >= 1
+        entry = history_response.data[0]
+        assert entry["field"] == "status"
+        assert entry["old_value"] == "em_analise"
+        assert entry["new_value"] == "aprovado"
+        assert entry["user"]["email"] == "user@example.com"
+
+    def test_history_records_usuario_change(self, admin_client, denuncia, admin_user):
+        url_update = reverse("denuncia_update", kwargs={"pk": denuncia.pk})
+        response = admin_client.patch(url_update, {"usuario": admin_user.pk}, format="json")
+        assert response.status_code == 200
+
+        url_history = reverse("denuncia_history", kwargs={"pk": denuncia.pk})
+        history_response = admin_client.get(url_history)
+        assert history_response.status_code == 200
+        usuario_entries = [item for item in history_response.data if item["field"] == "usuario"]
+        assert usuario_entries, "Histórico não retornou alteração do campo usuario"
+        entry = usuario_entries[0]
+        assert entry["new_value"]["email"] == admin_user.email
+        assert entry["user"]["email"] == admin_user.email
