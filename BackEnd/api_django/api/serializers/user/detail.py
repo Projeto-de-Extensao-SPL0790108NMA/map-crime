@@ -11,4 +11,4 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # campos existentes no model User
-        fields = ('id', USERNAME_FIELD, 'name', 'is_active', 'is_staff')
+        fields = ('id', USERNAME_FIELD, 'name', 'organization', 'is_active', 'is_staff')

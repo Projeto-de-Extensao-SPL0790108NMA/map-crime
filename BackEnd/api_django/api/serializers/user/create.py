@@ -13,7 +13,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # use USERNAME_FIELD (ex: 'email') e campos reais do model (name, is_active, is_staff)
-        fields = ('id', USERNAME_FIELD, 'name', 'password', 'is_active', 'is_staff')
+        fields = ('id', USERNAME_FIELD, 'name', 'organization', 'password', 'is_active', 'is_staff')
         read_only_fields = ('id',)
 
     def create(self, validated_data):

@@ -2,9 +2,11 @@ from django.urls import path
 
 from api.views.denuncia import (
     DenunciaCreateView,
+    DenunciaDashboardView,
     DenunciaDeleteView,
     DenunciaDetailProtocoloView,
     DenunciaDetailView,
+    DenunciaHistoryListView,
     DenunciaListView,
     DenunciaReportView,
     DenunciaUpdateView,
@@ -53,4 +55,10 @@ urlpatterns = [
     path("denuncias/<uuid:pk>/delete/", DenunciaDeleteView.as_view(), name="denuncia_delete"),
     path("denuncias/heatmap/", DenunciaHeatmapList.as_view(), name="denuncia-heatmap"),
     path("denuncias/relatorios/", DenunciaReportView.as_view(), name="denuncia-report"),
+    path(
+        "denuncias/<uuid:pk>/history/",
+        DenunciaHistoryListView.as_view(),
+        name="denuncia_history",
+    ),
+    path("dashboard/", DenunciaDashboardView.as_view(), name="denuncia_dashboard"),
 ]

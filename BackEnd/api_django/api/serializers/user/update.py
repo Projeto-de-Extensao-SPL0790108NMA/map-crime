@@ -13,7 +13,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # adapte os campos que podem ser atualizados; incluir password como write_only
-        fields = ('id', USERNAME_FIELD, 'name', 'is_active', 'is_staff', 'password')
+        fields = ('id', USERNAME_FIELD, 'name', 'organization', 'is_active', 'is_staff', 'password')
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)

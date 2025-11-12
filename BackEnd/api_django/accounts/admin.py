@@ -11,7 +11,7 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Informações pessoais', {'fields': ('name',)}),
+        ('Informações pessoais', {'fields': ('name', 'organization')}),
         ('Permissões', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Extras', {'fields': ('is_social_account', 'totp_secret')}),
     )
@@ -26,4 +26,4 @@ class UserAdmin(BaseUserAdmin):
 @admin.register(SocialAccount)
 class SocialAccountAdmin(admin.ModelAdmin):
     list_display = ('provider', 'email', 'user', 'verified', 'created_at')
-    search_fields = ('provider', 'email', 'social_id')
+    search_fields = ('provider', 'email', 'social_id', 'organization')
