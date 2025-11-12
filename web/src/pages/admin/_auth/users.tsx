@@ -1,10 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Loader2, Pencil, Trash2 } from 'lucide-react';
+import { Loader2, Pencil, UserRoundPlus, UserRoundX } from 'lucide-react';
 
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { Fragment } from 'react';
 import { CreateUserSheet } from './-components/create-user-sheet';
 import { EditUserSheet } from './-components/edit-user-sheet';
+import type { User } from '@/interfaces/user';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -44,6 +45,18 @@ function Users() {
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     retry: 1,
+  });
+
+  const updateUserState = useMutation({
+    mutationFn: async (user: User) => {
+      const is_active = user.status === 'active';
+      await api.patch(`/api/users/${user.id}/update/`, {
+        is_active: !is_active,
+      });
+    },
+    onSuccess: (_, user) => {
+      user.status = user.status === 'active' ? 'inactive' : 'active';
+    }
   });
 
   return (
@@ -128,12 +141,18 @@ function Users() {
                                   <Pencil className="w-4 h-4" />
                                 </Button>
                               </EditUserSheet>
+
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => updateUserState.mutate(user)}
+                                disabled={updateUserState.isPending}
                               >
-                                <Trash2 className="w-4 h-4" />
+                                {user.status === 'active' ? (
+                                  <UserRoundX className="w-4 h-4 text-destructive hover:text-destructive hover:bg-destructive/10" />
+                                ) : (
+                                  <UserRoundPlus className="w-4 h-4 text-green-600 hover:text-green-600 hover:bg-green-600/10" />
+                                )}
                               </Button>
                             </div>
                           </div>
