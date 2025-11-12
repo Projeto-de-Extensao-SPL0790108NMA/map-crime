@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import api from '@/lib/axios';
 import { formatDate } from '@/lib/utils';
+import { CATEGORIES_MAP } from '@/constants/categories';
 
 export const Route = createFileRoute('/admin/_auth/reports/')({
   component: ReportsComponent,
@@ -138,7 +139,7 @@ function ReportsComponent() {
                         <StatusBadge status={report.status} />
                       </div>
                       <h3 className="font-medium mt-1 truncate">
-                        {report.title}
+                        {CATEGORIES_MAP[report.title] || report.title}
                       </h3>
                       <p className="text-sm text-muted-foreground">
                         Criada em {formatDate(report.createdAt)}
