@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, LocateFixed, MapPin } from 'lucide-react';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import { toast } from 'sonner';
+import { toast } from '@/lib/sonner';
 
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';

@@ -3,9 +3,9 @@ import z from 'zod/v3';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { useRef } from 'react';
 import { AxiosError } from 'axios';
+import { toast } from '@/lib/sonner';
 import {
   Sheet,
   SheetClose,
@@ -63,11 +63,14 @@ export function CreateUserSheet() {
     onError: (error) => {
       if (
         error instanceof AxiosError &&
-        error.response &&
-        error.response.status === 422
+        error.response
       ) {
-        const { property, message } = error.response.data;
-        toast.error(`${property}: ${message}`);
+        if (error.response.status === 422) {
+          const { property, message } = error.response.data;
+          toast.error(`${property}: ${message}`);
+        } else if (error.response.status === 409) {
+          toast.error('E-mail já cadastrado.');
+        }
       } else {
         toast.error('Erro ao criar usuário.');
       }

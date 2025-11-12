@@ -3,7 +3,7 @@ import z from 'zod/v3';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { toast } from '@/lib/sonner';
 import { useEffect, useRef } from 'react';
 import { AxiosError } from 'axios';
 import type { User } from '@/interfaces/user';
