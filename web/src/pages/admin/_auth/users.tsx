@@ -145,16 +145,6 @@ function Users() {
                               <Pencil className="w-4 h-4" />
                             </Button>
                           </EditUserSheet>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                          >
-                            { user.status === 'active' ?  (
-                              <UserRoundX className="w-4 h-4 text-red-600" />
-                            ): (
-                              <UserRoundPlus className="w-4 h-4 text-green-600" />
-                            )}
-                          </Button>
                         </div>
                       </div>
                     </CardContent>
