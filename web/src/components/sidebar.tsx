@@ -22,7 +22,6 @@ const menuItems = [
   { icon: LayoutDashboardIcon, label: 'Dashboard', path: '/admin' },
   { icon: FileTextIcon, label: 'Denúncias', path: '/admin/reports' },
   { icon: UsersIcon, label: 'Usuários', path: '/admin/users' },
-  { icon: BarChart3Icon, label: 'Relatórios', path: '/admin/reports-admin' },
 ] as const;
 
 function NavigationLink({
