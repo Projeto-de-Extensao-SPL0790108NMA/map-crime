@@ -1,6 +1,6 @@
-import pytest
 from datetime import timedelta
 
+import pytest
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point
 from django.urls import reverse
@@ -274,7 +274,7 @@ class TestDenunciaDelete:
 
 
 @pytest.mark.django_db
-class TestDenunciaHistory:
+class TestDenunciaHistoryDashboard:
     """Testes para o endpoint de histórico/dashboard."""
 
     def test_history_requires_auth(self, client, denuncia):
