@@ -97,6 +97,7 @@ Estrutura idêntica aos endpoints de usuário, mas aplicando serializers de grup
 | GET | `/api/denuncias/heatmap/` | Pontos leves para mapas de calor. | Pública | Query params: `bbox=minx,miny,maxx,maxy`, `start_date`, `end_date`, `limit`. Retorna `categoria`, `lat`, `lng`, `date`, `weight`. |
 | GET | `/api/denuncias/relatorios/` | Exporta CSV/XLSX/DOCX com resumo por status. | `IsAuthenticated` + (`Admin` ou `User`) | Params: `formato=csv|xlsx|docs`, `data_inicio`, `data_fim`. Retorna arquivo para download. |
 | GET | `/api/denuncias/<uuid>/history/` | Histórico de alterações nos campos `status` e `usuario`, com valores anterior/novo e autor da alteração. | `IsAuthenticated` + (`Admin` ou `User`) | Útil para auditoria e acompanhamento. |
+| GET | `/api/denuncias/dashboard/` | Métricas agregadas (usuários ativos, total de denuncias, taxa de resolução atual vs mês anterior). | `IsAuthenticated` + (`Admin` ou `User`) | Inclui totais, status breakdown e comparação percentual. |
 
 **Status possíveis**
 

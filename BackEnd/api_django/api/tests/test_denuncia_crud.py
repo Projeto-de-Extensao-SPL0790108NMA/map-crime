@@ -1,8 +1,12 @@
 import pytest
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point
 from django.urls import reverse
+from django.utils import timezone
 
+from api.choice import StatusChoices
 from api.models import Denuncia
 
 User = get_user_model()
@@ -267,6 +271,65 @@ class TestDenunciaDelete:
         # auth_client já tem permissão (IsUser)
         assert response.status_code == 204
         assert not Denuncia.objects.filter(pk=denuncia.pk).exists()
+
+
+@pytest.mark.django_db
+class TestDenunciaHistory:
+    """Testes para o endpoint de histórico/dashboard."""
+
+    def test_history_requires_auth(self, client, denuncia):
+        url = reverse("denuncia_history", kwargs={"pk": denuncia.pk})
+        response = client.get(url)
+        assert response.status_code == 401
+
+    def test_history_records_status_change(self, auth_client, denuncia):
+        url_update = reverse("denuncia_update", kwargs={"pk": denuncia.pk})
+        response = auth_client.patch(url_update, {"status": "aprovado"}, format="json")
+        assert response.status_code == 200
+
+        url_history = reverse("denuncia_history", kwargs={"pk": denuncia.pk})
+        history_response = auth_client.get(url_history)
+        assert history_response.status_code == 200
+        assert history_response.data[0]["field"] == "status"
+        assert history_response.data[0]["new_value"] == "aprovado"
+
+    def test_dashboard_metrics(self, admin_client):
+        now = timezone.localtime()
+        current_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        last_month_end = current_month - timedelta(seconds=1)
+        last_month_start = last_month_end.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        Denuncia.objects.create(
+            categoria="Atual",
+            descricao="Teste",
+            localizacao=Point(-46, -23, srid=4326),
+            status=StatusChoices.EM_ANALISE,
+            created_at=current_month + timedelta(days=1),
+            updated_at=current_month + timedelta(days=1),
+        )
+        Denuncia.objects.create(
+            categoria="Resolvida",
+            descricao="Teste",
+            localizacao=Point(-46, -23, srid=4326),
+            status=StatusChoices.APROVADO,
+            created_at=current_month + timedelta(days=2),
+            updated_at=current_month + timedelta(days=2),
+        )
+        Denuncia.objects.create(
+            categoria="Rejeitada",
+            descricao="Antiga",
+            localizacao=Point(-46, -23, srid=4326),
+            status=StatusChoices.REJEITADO,
+            created_at=last_month_start + timedelta(days=5),
+            updated_at=last_month_start + timedelta(days=5),
+        )
+
+        url = reverse("denuncia_dashboard")
+        response = admin_client.get(url)
+        assert response.status_code == 200
+        metrics = response.data["metrics"]
+        assert metrics["totalReports"] == 3
+        assert metrics["reportsByStatus"]["rejected"] >= 1
     
     def test_delete_denuncia_as_admin(self, admin_client, denuncia):
         """Testa exclusão por admin."""

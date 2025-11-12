@@ -2,6 +2,7 @@ from django.urls import path
 
 from api.views.denuncia import (
     DenunciaCreateView,
+    DenunciaDashboardView,
     DenunciaDeleteView,
     DenunciaDetailProtocoloView,
     DenunciaDetailView,
@@ -59,4 +60,5 @@ urlpatterns = [
         DenunciaHistoryListView.as_view(),
         name="denuncia_history",
     ),
+    path("dashboard/", DenunciaDashboardView.as_view(), name="denuncia_dashboard"),
 ]
