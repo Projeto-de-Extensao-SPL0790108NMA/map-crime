@@ -1,31 +1,13 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createRouter } from '@tanstack/react-router';
 
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx';
+import * as AuthContext from './auth.tsx';
 
-import { routeTree } from './route-tree.gen';
-
-import './styles.css';
 import reportWebVitals from './reportWebVitals.ts';
+import { App } from './app.tsx';
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext();
-const router = createRouter({
-  routeTree,
-  context: {
-    ...TanStackQueryProviderContext,
-  },
-  defaultPreload: 'intent',
-  scrollRestoration: true,
-  defaultStructuralSharing: true,
-  defaultPreloadStaleTime: 0,
-});
-
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router;
-  }
-}
 
 const rootElement = document.getElementById('app');
 if (rootElement && !rootElement.innerHTML) {
@@ -33,7 +15,9 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-        <RouterProvider router={router} />
+        <AuthContext.Provider>
+          <App />
+        </AuthContext.Provider>
       </TanStackQueryProvider.Provider>
     </StrictMode>,
   );

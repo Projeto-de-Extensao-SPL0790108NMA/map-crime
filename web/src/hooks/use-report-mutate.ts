@@ -17,8 +17,8 @@ async function submitReport(data: CreateReportDTO): Promise<Output> {
   formData.append('address', address);
 
   if (attachments && attachments.length > 0) {
-    attachments.forEach((file, index) => {
-      formData.append(`attachments[${index}]`, file);
+    attachments.forEach((file) => {
+      formData.append('attachments', file);
     });
   }
 

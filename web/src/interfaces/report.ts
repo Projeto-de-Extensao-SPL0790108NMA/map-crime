@@ -12,11 +12,17 @@ export type ReportStatus = 'pending' | 'in_progress' | 'resolved' | 'rejected';
 
 export interface TimelineEvent {
   id: string;
-  action: 'created' | 'status_updated' | 'comment_added' | 'assigned_to_user';
+  action:
+    | 'created'
+    | 'updated_status'
+    | 'comment_added'
+    | 'assigned_to_user'
+    | 'marked_resolved'
+    | 'marked_rejected';
   metadata: Record<string, any>;
   createdBy?: {
     name?: string;
-    entity: string;
+    organization: string;
   };
   createdAt: string;
 }
@@ -26,6 +32,26 @@ interface Attachment {
   name: string;
   type: string;
   size: number;
+}
+
+export interface Report {
+  id: string;
+  code: string;
+  status: ReportStatus;
+  title: string;
+  coordinates: Coordinates;
+  address: string;
+  assignedTo?: {
+    id: string;
+    name: string;
+    organization: string;
+  };
+  timeline: Array<TimelineEvent>;
+  attachments: Array<Attachment>;
+  note?: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AnonymousReport {

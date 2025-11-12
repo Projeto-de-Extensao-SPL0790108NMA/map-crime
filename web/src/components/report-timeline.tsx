@@ -1,4 +1,11 @@
-import { Clock, FileText, MessageSquare, UserCheck } from 'lucide-react';
+import {
+  Ban,
+  CheckCheck,
+  Clock,
+  FileText,
+  MessageSquare,
+  UserCheck,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { TimelineEvent } from '@/interfaces/report';
@@ -13,12 +20,18 @@ const getEventIcon = (type: TimelineEvent['action']) => {
   switch (type) {
     case 'created':
       return <FileText className="h-4 w-4" />;
-    case 'status_updated':
+    case 'updated_status':
       return <Clock className="h-4 w-4" />;
     case 'comment_added':
       return <MessageSquare className="h-4 w-4" />;
     case 'assigned_to_user':
       return <UserCheck className="h-4 w-4" />;
+    case 'marked_resolved':
+      return <CheckCheck className="h-4 w-4" />;
+    case 'marked_rejected':
+      return <Ban className="h-4 w-4" />;
+    default:
+      return <FileText className="h-4 w-4" />;
   }
 };
 
@@ -26,12 +39,18 @@ const getEventTitle = (event: TimelineEvent) => {
   switch (event.action) {
     case 'created':
       return 'Denúncia Criada';
-    case 'status_updated':
+    case 'updated_status':
       return 'Status Atualizado';
     case 'comment_added':
       return 'Comentário Adicionado';
     case 'assigned_to_user':
       return 'Atribuído';
+    case 'marked_resolved':
+      return 'Marcado como Resolvido';
+    case 'marked_rejected':
+      return 'Marcado como Rejeitado';
+    default:
+      return 'Evento';
   }
 };
 
@@ -43,17 +62,17 @@ const UserDetails = ({ user }: { user: TimelineEvent['createdBy'] }) => {
       {user.name && (
         <span className="font-medium text-foreground">{user.name} - </span>
       )}
-      <span className="font-medium text-foreground">{user.entity}</span>
+      <span className="font-medium text-foreground">{user.organization}</span>
     </>
   );
 };
 
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    pendente: 'Pendente',
-    em_analise: 'Em Análise',
-    resolvida: 'Resolvida',
-    arquivada: 'Arquivada',
+    pending: 'Pendente',
+    in_progress: 'Em Análise',
+    resolved: 'Resolvida',
+    rejected: 'Arquivada',
   };
   return labels[status] || status;
 };
@@ -64,25 +83,22 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
   );
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-xl">Linha do Tempo</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="relative space-y-6">
-          {/* Timeline line */}
           <div className="absolute left-5 top-2 bottom-2 w-px bg-border" />
 
           {sortedTimeline.map((event) => (
             <div key={event.id} className="relative flex gap-4 group">
-              {/* Icon */}
               <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-background bg-card shadow-sm">
                 <div className="rounded-full bg-primary/10 p-1.5 text-primary">
                   {getEventIcon(event.action)}
                 </div>
               </div>
 
-              {/* Content */}
               <div className="flex-1 space-y-2 pb-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
@@ -99,7 +115,6 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
                   </div>
                 </div>
 
-                {/* Event details */}
                 <div className="space-y-2 text-sm">
                   {event.action === 'created' && (
                     <p className="text-muted-foreground">
@@ -107,7 +122,7 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
                     </p>
                   )}
 
-                  {event.action === 'status_updated' && (
+                  {event.action === 'updated_status' && (
                     <div className="space-y-2">
                       {event.createdBy && (
                         <p className="text-muted-foreground">
@@ -148,10 +163,30 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
                           Atribuído por: <UserDetails user={event.createdBy} />
                         </p>
                       )}
-                      {event.metadata.assignedUser && (
+                      {event.metadata.assignedToUser && (
                         <p className="text-muted-foreground">
                           Responsável:{' '}
-                          <UserDetails user={event.metadata.assignedUser} />
+                          <UserDetails user={event.metadata.assignedToUser} />
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {event.action === 'marked_resolved' && (
+                    <div className="space-y-1">
+                      {event.createdBy && (
+                        <p className="text-muted-foreground">
+                          Resolvida por: <UserDetails user={event.createdBy} />
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {event.action === 'marked_rejected' && (
+                    <div className="space-y-1">
+                      {event.createdBy && (
+                        <p className="text-muted-foreground">
+                          Rejeitada por: <UserDetails user={event.createdBy} />
                         </p>
                       )}
                     </div>

@@ -3,7 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod/v3';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/sonner';
 
 import { TrackingCodeModal } from './-components/tracking-code-modal';
 import {

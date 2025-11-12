@@ -25,7 +25,7 @@ const fetchReport = async (code: string): Promise<AnonymousReport | null> => {
       lat: latitude,
       lng: longitude,
     },
-    assignedTo: assignedTo?.entity,
+    assignedTo: assignedTo?.organization,
   };
 };
 
