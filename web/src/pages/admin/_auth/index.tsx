@@ -108,7 +108,8 @@ function Dashboard() {
     },
   ];
 
-  const sign = metrics && metrics.resolutionRateComparison.difference >= 0 && '+';
+  const sign =
+    metrics && metrics.resolutionRateComparison.difference >= 0 && '+';
 
   return (
     <div className="space-y-6">
@@ -184,8 +185,7 @@ function Dashboard() {
                       pontos percentuais
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Variação de{' '}
-                      {sign}
+                      Variação de {sign}
                       {metrics.resolutionRateComparison.percentageChange.toFixed(
                         1,
                       )}

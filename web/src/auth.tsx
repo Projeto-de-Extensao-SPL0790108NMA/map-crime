@@ -38,13 +38,16 @@ export function setStoredUser(user: AuthenticatedUser | null) {
   }
 }
 
-export function setStoredTokens(accessToken: string | null, refreshToken: string | null) {
+export function setStoredTokens(
+  accessToken: string | null,
+  refreshToken: string | null,
+) {
   if (accessToken) {
     localStorage.setItem(accessTokenKey, accessToken);
   } else {
     localStorage.removeItem(accessTokenKey);
   }
-  
+
   if (refreshToken) {
     localStorage.setItem(refreshTokenKey, refreshToken);
   } else {
@@ -70,7 +73,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
     if (isAuthenticated) {
       api.post('/accounts/logout/').catch(() => {});
     }
-    
+
     setStoredUser(null);
     setStoredTokens(null, null);
     setUser(null);
@@ -80,7 +83,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
     const { data } = await api.post('/auth/token/', credentials, {
       headers: { 'X-Without-Auth': 'true' },
     });
-    
+
     setStoredTokens(data.access, data.refresh);
     setStoredUser(data.user);
     setUser(data.user);

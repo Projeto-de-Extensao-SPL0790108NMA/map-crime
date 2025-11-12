@@ -38,7 +38,6 @@ function NavigationLink({
 }) {
   const location = useLocation();
 
-
   return (
     <Link to={path}>
       <Button

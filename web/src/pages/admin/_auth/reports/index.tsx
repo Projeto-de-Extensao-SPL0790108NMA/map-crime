@@ -1,13 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Link, createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
-import { EyeIcon, SearchIcon } from 'lucide-react';
+import { Fragment, useState } from 'react';
+import { EyeIcon, Loader2, SearchIcon } from 'lucide-react';
 
-import type { ReportStatus } from '@/interfaces/report';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/status-badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -16,32 +21,31 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import api from '@/lib/axios';
-import { formatDate } from '@/lib/utils';
+import { formatDate, mapReports } from '@/lib/utils';
 
 export const Route = createFileRoute('/admin/_auth/reports/')({
   component: ReportsComponent,
 });
-
-interface Report {
-  id: string;
-  code: string;
-  status: ReportStatus;
-  title: string;
-  createdAt: string;
-}
 
 interface SearchParams {
   search: string;
   status: string;
 }
 
-const fetchUsers = async (params: SearchParams) => {
-  const response = await api.get<{ reports: Array<Report> }>('/reports', {
-    withCredentials: true,
-    params,
+const fetchUsers = async (page: number, filters: SearchParams) => {
+  const response = await api.get('/api/denuncias/', {
+    params: {
+      page: page,
+      ...filters,
+    },
   });
 
-  return response.data.reports;
+  const nextPage = response.data.next ? page + 1 : null;
+  return {
+    reports: mapReports(response.data.results as Array<any>),
+    count: response.data.count,
+    nextPage,
+  };
 };
 
 function ReportsComponent() {
@@ -53,9 +57,18 @@ function ReportsComponent() {
     status: '',
   });
 
-  const { data: reports, isLoading } = useQuery({
+  const {
+    data,
+    status,
+    hasNextPage,
+    fetchNextPage,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ['reports', filters],
-    queryFn: () => fetchUsers(filters),
+    queryFn: (params) => fetchUsers(params.pageParam, filters),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
   });
 
   const handleFilter = () => {
@@ -94,10 +107,9 @@ function ReportsComponent() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pending">Pendente</SelectItem>
-                <SelectItem value="in_progress">Em Andamento</SelectItem>
-                <SelectItem value="resolved">Resolvida</SelectItem>
-                <SelectItem value="rejected">Rejeitado</SelectItem>
+                <SelectItem value="em_analise">Em Andamento</SelectItem>
+                <SelectItem value="aprovado">Resolvida</SelectItem>
+                <SelectItem value="rejeitado">Rejeitado</SelectItem>
               </SelectContent>
             </Select>
 
@@ -111,9 +123,12 @@ function ReportsComponent() {
       <Card>
         <CardHeader>
           <CardTitle>Relatórios de Denúncias</CardTitle>
+          <CardDescription>
+            Total de denúncias: {data?.pages[0]?.count ?? 0}
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {status === 'pending' ? (
             <div className="space-y-3">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
@@ -124,36 +139,55 @@ function ReportsComponent() {
             </div>
           ) : (
             <div className="space-y-3">
-              {reports &&
-                reports.map((report) => (
-                  <div
-                    key={report.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <h1 className="font-mono text-sm font-semibold">
-                          {report.code}
-                        </h1>
-                        <StatusBadge status={report.status} />
+              {data?.pages.map(({ reports }, page) => (
+                <Fragment key={page}>
+                  {reports.map((report) => (
+                    <div
+                      key={report.id}
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <h1 className="font-mono text-sm font-semibold">
+                            {report.code}
+                          </h1>
+                          <StatusBadge status={report.status} />
+                        </div>
+                        <h3 className="font-medium mt-1 truncate">
+                          {report.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Criada em {formatDate(report.createdAt)}
+                        </p>
                       </div>
-                      <h3 className="font-medium mt-1 truncate">
-                        {report.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Criada em {formatDate(report.createdAt)}
-                      </p>
+                      <Button variant="ghost" size="icon" onClick={() => {}}>
+                        <Link
+                          to={'/admin/reports/$id'}
+                          params={{ id: report.id }}
+                        >
+                          <EyeIcon className="h-4 w-4" />
+                        </Link>
+                      </Button>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => {}}>
-                      <Link
-                        to={'/admin/reports/$id'}
-                        params={{ id: report.id }}
-                      >
-                        <EyeIcon className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                ))}
+                  ))}
+                </Fragment>
+              ))}
+
+              <div className="flex justify-center items-center w-full pt-2 pb-8 lg:pb-0">
+                {hasNextPage && (
+                  <Button
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetching || isFetchingNextPage}
+                    variant="outline"
+                  >
+                    {isFetchingNextPage ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      'Carregar mais'
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
           )}
         </CardContent>
