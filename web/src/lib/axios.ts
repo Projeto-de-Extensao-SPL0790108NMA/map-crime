@@ -27,6 +27,7 @@ api.interceptors.response.use(
       setStoredTokens(null, null);
       window.location.href = '/admin/sign-in';
     }
+    return Promise.reject(error);
   },
 );
 

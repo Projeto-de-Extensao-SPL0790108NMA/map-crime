@@ -3,9 +3,9 @@ import z from 'zod/v3';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { useRef } from 'react';
 import { AxiosError } from 'axios';
+import { toast } from '@/lib/sonner';
 import {
   Sheet,
   SheetClose,
@@ -29,6 +29,9 @@ const formSchema = z.object({
   organization: z
     .string()
     .nonempty({ message: 'A organização é obrigatória.' }),
+  password: z
+    .string()
+    .min(6, { message: 'A senha deve ter no mínimo 6 caracteres.' }),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -41,6 +44,7 @@ export function CreateUserSheet() {
       name: '',
       email: '',
       organization: '',
+      password: '',
     },
   });
 
@@ -52,25 +56,26 @@ export function CreateUserSheet() {
 
   const mutation = useMutation({
     mutationFn: async (data: FormSchema) => {
-      await api.post('/users', data, { withCredentials: true });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      await api.post('/api/users/create/', data);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('Usuário criado com sucesso!');
       closeSheetRef.current?.click();
       form.reset();
     },
     onError: (error) => {
-      if (
-        error instanceof AxiosError &&
-        error.response &&
-        error.response.status === 422
-      ) {
-        const { property, message } = error.response.data;
-        toast.error(`${property}: ${message}`);
-      } else {
-        toast.error('Erro ao criar usuário.');
+      let message = 'Erro ao criar usuário.';
+      if (error instanceof AxiosError && error.response) {
+        const response = error.response;
+        if (response.status == 400) {
+          message = Object.entries(response.data)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(' ');
+        }
       }
+
+      toast.error(message);
     },
   });
 
@@ -106,6 +111,15 @@ export function CreateUserSheet() {
               )}
             </div>
             <div className="grid gap-3">
+              <Label htmlFor="organization">Organização</Label>
+              <Input {...register('organization')} />
+              {formState.errors.organization && (
+                <p className="text-destructive text-sm">
+                  {formState.errors.organization.message}
+                </p>
+              )}
+            </div>
+            <div className="grid gap-3">
               <Label htmlFor="email">E-mail</Label>
               <Input {...register('email')} type="email" />
               {formState.errors.email && (
@@ -115,11 +129,11 @@ export function CreateUserSheet() {
               )}
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="organization">Organização</Label>
-              <Input {...register('organization')} />
-              {formState.errors.organization && (
+              <Label htmlFor="password">Senha</Label>
+              <Input {...register('password')} type="password" />
+              {formState.errors.password && (
                 <p className="text-destructive text-sm">
-                  {formState.errors.organization.message}
+                  {formState.errors.password.message}
                 </p>
               )}
             </div>

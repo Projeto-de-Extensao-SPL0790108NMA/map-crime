@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import api from '@/lib/axios';
 import { cn, usersMapper } from '@/lib/utils';
+import { toast } from '@/lib/sonner';
 
 export const Route = createFileRoute('/admin/_auth/users')({
   component: Users,
@@ -56,6 +57,12 @@ function Users() {
     },
     onSuccess: (_, user) => {
       user.status = user.status === 'active' ? 'inactive' : 'active';
+      toast.success(`Usuário ${
+        user.status === 'active' ? 'ativado' : 'desativado'
+      } com sucesso!`);
+    },
+    onError: () => {
+      toast.error('Erro ao atualizar o estado do usuário.');
     }
   });
 
