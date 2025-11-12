@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import api from '@/lib/axios';
-import { formatDate, mapReports } from '@/lib/utils';
+import { formatDate, reportsMapper } from '@/lib/utils';
 
 export const Route = createFileRoute('/admin/_auth/reports/')({
   component: ReportsComponent,
@@ -42,7 +42,7 @@ const fetchUsers = async (page: number, filters: SearchParams) => {
 
   const nextPage = response.data.next ? page + 1 : null;
   return {
-    reports: mapReports(response.data.results as Array<any>),
+    reports: reportsMapper(response.data.results as Array<any>),
     count: response.data.count,
     nextPage,
   };

@@ -1,43 +1,49 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Loader2, Pencil, SearchIcon, Trash2 } from 'lucide-react';
+import { Loader2, Pencil, Trash2 } from 'lucide-react';
 
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { Fragment } from 'react';
 import { CreateUserSheet } from './-components/create-user-sheet';
 import { EditUserSheet } from './-components/edit-user-sheet';
-import type { User } from '@/interfaces/user';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import api from '@/lib/axios';
-import { cn } from '@/lib/utils';
-import { useDebounce } from '@/hooks/use-debounce';
+import { cn, usersMapper } from '@/lib/utils';
 
 export const Route = createFileRoute('/admin/_auth/users')({
   component: Users,
 });
 
-const fetchUsers = async (search: string) => {
-  const response = await api.get('users', {
-    withCredentials: true,
-    params: { search },
+const fetchUsers = async ({ pageParam }: { pageParam: number }) => {
+  const response = await api.get('/api/users/', {
+    params: {
+      page: pageParam,
+    },
   });
-  return response.data.users as Array<User>;
+
+  const nextPage = response.data.next ? pageParam + 1 : null;
+  return {
+    nextPage,
+    total: response.data.count,
+    users: usersMapper(response.data.results as Array<any>),
+  };
 };
 
 function Users() {
-  const [search, setSearch] = useState('');
-  const debouncedSearch = useDebounce(search, 500);
-
   const {
-    data: users,
-    isLoading,
+    data,
+    status,
     isFetching,
-  } = useQuery({
-    queryKey: ['users', debouncedSearch],
-    queryFn: () => fetchUsers(debouncedSearch),
-    placeholderData: (pre) => pre,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    retry: 1,
   });
 
   return (
@@ -52,111 +58,106 @@ function Users() {
         <CreateUserSheet />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Filtros</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Buscar por código ou título..."
-                className="pl-9"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <Card className="shadow-sm">
         <CardContent className="p-6">
-          {isLoading ? (
+          {status === 'pending' ? (
             <div>Carregando usuários...</div>
           ) : (
             <>
               <h2 className="text-lg font-semibold mb-4 text-foreground">
-                {users?.length} usuário(s) encontrado(s)
-                {isFetching && (
-                  <Loader2 className="inline-block ml-2 h-4 w-4 animate-spin text-muted-foreground" />
-                )}
+                {data?.pages[0]?.total} usuário(s) encontrado(s)
               </h2>
 
               <div className="space-y-4">
-                {users?.map((user) => (
-                  <Card key={user.id} className="shadow-sm">
-                    <CardContent className="p-5">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-foreground">
-                              {user.name}
-                            </h3>
+                {data?.pages.map(({ users }, index) => (
+                  <Fragment key={index}>
+                    {users.map((user) => (
+                      <Card key={user.id} className="shadow-sm">
+                        <CardContent className="p-5">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-semibold text-foreground">
+                                  {user.name}
+                                </h3>
 
-                            <Badge
-                              variant={
-                                user.role === 'user' ? 'outline' : 'default'
-                              }
-                              className={cn(
-                                'text-muted-foreground',
-                                user.role === 'admin' &&
-                                  'bg-gray-200 text-gray-700 hover:bg-gray-200',
-                              )}
-                            >
-                              {user.role === 'admin'
-                                ? 'Administrador'
-                                : 'Usuário'}
-                            </Badge>
+                                <Badge
+                                  variant={
+                                    user.role === 'user' ? 'outline' : 'default'
+                                  }
+                                  className={cn(
+                                    'text-muted-foreground',
+                                    user.role === 'admin' &&
+                                      'bg-gray-200 text-gray-700 hover:bg-gray-200',
+                                  )}
+                                >
+                                  {user.role === 'admin'
+                                    ? 'Administrador'
+                                    : 'Usuário'}
+                                </Badge>
 
-                            <Badge
-                              variant="outline"
-                              className={cn({
-                                'border-green-600 text-green-700 bg-green-50':
-                                  user.status === 'active',
-                                'border-yellow-600 text-yellow-700 bg-yellow-50':
-                                  user.status === 'inactive',
-                                'border-red-600 text-red-700 bg-red-50':
-                                  user.status === 'suspended',
-                              })}
-                            >
-                              {user.status === 'active' && 'Ativo'}
-                              {user.status === 'inactive' && 'Inativo'}
-                              {user.status === 'suspended' && 'Suspenso'}
-                            </Badge>
+                                <Badge
+                                  variant="outline"
+                                  className={cn({
+                                    'border-green-600 text-green-700 bg-green-50':
+                                      user.status === 'active',
+                                    'border-yellow-600 text-yellow-700 bg-yellow-50':
+                                      user.status === 'inactive',
+                                    'border-red-600 text-red-700 bg-red-50':
+                                      user.status === 'suspended',
+                                  })}
+                                >
+                                  {user.status === 'active' && 'Ativo'}
+                                  {user.status === 'inactive' && 'Inativo'}
+                                  {user.status === 'suspended' && 'Suspenso'}
+                                </Badge>
+                              </div>
+
+                              <p className="text-muted-foreground text-sm">
+                                {user.email}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <EditUserSheet user={user}>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-muted-foreground hover:text-foreground"
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                              </EditUserSheet>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
-
-                          <p className="text-muted-foreground text-sm">
-                            {user.email}
-                          </p>
-                          <p className="text-muted-foreground text-xs mt-0.5">
-                            Cadastrado em {user.createdAt}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <EditUserSheet user={user}>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-muted-foreground hover:text-foreground"
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </Button>
-                          </EditUserSheet>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </Fragment>
                 ))}
+
+                <div className="flex justify-center items-center w-full pt-2 pb-8 lg:pb-0">
+                  {hasNextPage && (
+                    <Button
+                      onClick={() => fetchNextPage()}
+                      disabled={isFetching || isFetchingNextPage}
+                      variant="outline"
+                    >
+                      {isFetchingNextPage ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        'Carregar mais'
+                      )}
+                    </Button>
+                  )}
+                </div>
               </div>
             </>
           )}

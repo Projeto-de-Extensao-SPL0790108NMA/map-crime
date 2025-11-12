@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { ClassValue } from 'clsx';
 import type { Report, ReportStatus } from '@/interfaces/report';
+import type { User } from '@/interfaces/user';
 
 export function cn(...inputs: Array<ClassValue>) {
   return twMerge(clsx(inputs));
@@ -35,7 +36,7 @@ type SimpleReport = Pick<
   'id' | 'code' | 'status' | 'title' | 'createdAt'
 >;
 
-export const reportsMapper = (data: any): SimpleReport => {
+export const reportMapper = (data: any): SimpleReport => {
   return {
     id: data.id,
     code: data.protocolo,
@@ -45,6 +46,21 @@ export const reportsMapper = (data: any): SimpleReport => {
   };
 };
 
-export const mapReports = (data: Array<any>): Array<SimpleReport> => {
-  return data.map(reportsMapper);
+export const reportsMapper = (data: Array<any>): Array<SimpleReport> => {
+  return data.map(reportMapper);
+};
+
+export const userMapper = (data: any): User => {
+  return {
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    role: data.role ?? 'user',
+    organization: data.organization,
+    status: data.is_active ? 'active' : 'inactive',
+  };
+};
+
+export const usersMapper = (data: Array<any>): Array<User> => {
+  return data.map(userMapper);
 };
