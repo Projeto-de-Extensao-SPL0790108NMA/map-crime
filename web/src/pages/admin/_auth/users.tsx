@@ -57,13 +57,15 @@ function Users() {
     },
     onSuccess: (_, user) => {
       user.status = user.status === 'active' ? 'inactive' : 'active';
-      toast.success(`Usuário ${
-        user.status === 'active' ? 'ativado' : 'desativado'
-      } com sucesso!`);
+      toast.success(
+        `Usuário ${
+          user.status === 'active' ? 'ativado' : 'desativado'
+        } com sucesso!`,
+      );
     },
     onError: () => {
       toast.error('Erro ao atualizar o estado do usuário.');
-    }
+    },
   });
 
   return (
@@ -101,20 +103,24 @@ function Users() {
                                   {user.name}
                                 </h3>
 
-                                <Badge
-                                  variant={
-                                    user.role === 'user' ? 'outline' : 'default'
-                                  }
-                                  className={cn(
-                                    'text-muted-foreground',
-                                    user.role === 'admin' &&
-                                      'bg-gray-200 text-gray-700 hover:bg-gray-200',
-                                  )}
-                                >
-                                  {user.role === 'admin'
-                                    ? 'Administrador'
-                                    : 'Usuário'}
-                                </Badge>
+                                {user.role && (
+                                  <Badge
+                                    variant={
+                                      user.role === 'user'
+                                        ? 'outline'
+                                        : 'default'
+                                    }
+                                    className={cn(
+                                      'text-muted-foreground',
+                                      user.role === 'admin' &&
+                                        'bg-gray-200 text-gray-700 hover:bg-gray-200',
+                                    )}
+                                  >
+                                    {user.role === 'admin'
+                                      ? 'Administrador'
+                                      : 'Usuário'}
+                                  </Badge>
+                                )}
 
                                 <Badge
                                   variant="outline"

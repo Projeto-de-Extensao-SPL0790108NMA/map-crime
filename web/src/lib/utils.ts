@@ -55,8 +55,7 @@ export const userMapper = (data: any): User => {
     id: data.id,
     name: data.name,
     email: data.email,
-    role: data.role ?? 'user',
-    organization: data.organization,
+    organization: data.organization ?? '',
     status: data.is_active ? 'active' : 'inactive',
   };
 };

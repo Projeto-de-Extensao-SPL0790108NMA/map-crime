@@ -3,7 +3,7 @@ import z from 'zod/v3';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+
 import { useEffect, useRef } from 'react';
 import { AxiosError } from 'axios';
 import type { User } from '@/interfaces/user';
@@ -22,12 +22,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 import api from '@/lib/axios';
+import { toast } from '@/lib/sonner';
 
 const formSchema = z.object({
   name: z
     .string()
     .min(2, { message: 'O nome deve ter no mínimo 2 caracteres.' }),
-  password: z.string().optional(),
+  password: z.string().nonempty({ message: 'A senha é obrigatória.' }),
   organization: z
     .string()
     .nonempty({ message: 'A organização é obrigatória.' }),
@@ -64,7 +65,7 @@ export function EditUserSheet({ user, children }: EditUserSheetProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: FormSchema) => {
-      await api.put(`/users/${user.id}`, data, { withCredentials: true });
+      await api.patch(`/api/users/${user.id}/update/`, data);
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
     onSuccess: () => {
@@ -72,16 +73,17 @@ export function EditUserSheet({ user, children }: EditUserSheetProps) {
       closeSheetRef.current?.click();
     },
     onError: (error) => {
-      if (
-        error instanceof AxiosError &&
-        error.response &&
-        error.response.status === 422
-      ) {
-        const { property, message } = error.response.data;
-        toast.error(`${property}: ${message}`);
-      } else {
-        toast.error('Erro ao atualizar usuário.');
+      let message = 'Erro ao criar usuário.';
+      if (error instanceof AxiosError && error.response) {
+        const response = error.response;
+        if (response.status == 400) {
+          message = Object.entries(response.data)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(' ');
+        }
       }
+
+      toast.error(message);
     },
   });
 
