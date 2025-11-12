@@ -45,8 +45,7 @@ O sistema possibilita que usuários registrem ocorrências de forma anônima, qu
 
 ### 🖥️ **Frontend**
 - React 18 + TypeScript  
-- Vite + React Router  
-- Zustand (gerenciamento de estado)  
+- Vite + TanStack Router
 - Axios (consumo da API)  
 - TailwindCSS + ShadCN/UI  
 - ESLint + Prettier  
