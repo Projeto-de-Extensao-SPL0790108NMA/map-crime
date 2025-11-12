@@ -45,8 +45,8 @@ const getDateRange = (range: DateRangeOption) => {
   const today = new Date();
 
   return {
-    startDate: format(subDays(today, +range), 'yyyy-MM-dd'),
-    endDate: format(today, 'yyyy-MM-dd'),
+    startDate: subDays(today, +range),
+    endDate: today,
   };
 };
 
