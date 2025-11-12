@@ -11,11 +11,10 @@ import {
 } from 'lucide-react';
 import { Separator } from '@radix-ui/react-separator';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import { Dialog } from '@radix-ui/react-dialog';
 import { useCallback, useState } from 'react';
-import { toast } from 'sonner';
 import { AssignReportCard } from './-components/assign-report-card';
 import type { Report } from '@/interfaces/report';
+import { toast } from '@/lib/sonner';
 import api from '@/lib/axios';
 import { formatDate } from '@/lib/utils';
 import {
@@ -36,7 +35,6 @@ import {
 } from '@/components/ui/select';
 import { ReportTimeline } from '@/components/report-timeline';
 import { env } from '@/env';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/admin/_auth/reports/$id')({
@@ -77,6 +75,7 @@ function RouteComponent() {
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries: ['visualization']
   });
 
   const updateStatus = useCallback(async () => {

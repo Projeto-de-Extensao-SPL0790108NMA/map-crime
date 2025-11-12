@@ -6,7 +6,7 @@ import z from 'zod/v3';
 
 import { ShieldIcon } from 'lucide-react';
 
-import { toast } from 'sonner';
+import { toast } from '@/lib/sonner';
 import {
   Card,
   CardContent,

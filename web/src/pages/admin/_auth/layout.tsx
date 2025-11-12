@@ -3,8 +3,10 @@ import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 import { MenuIcon, XIcon } from 'lucide-react';
 
 import { useState } from 'react';
+import { useJsApiLoader } from '@react-google-maps/api';
 import { Button } from '@/components/ui/button';
 import { Sidebar } from '@/components/sidebar';
+import { env } from '@/env';
 
 export const Route = createFileRoute('/admin/_auth')({
   component: AuthenticatedLayout,
