@@ -193,7 +193,7 @@ REST_FRAMEWORK = {
 }
 
 # Configurações do CORS
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = False
 CORS_EXPOSE_HEADERS = ['Content-Type', 'Authorization']
 CORS_ALLOW_HEADERS = [
     *default_headers,
