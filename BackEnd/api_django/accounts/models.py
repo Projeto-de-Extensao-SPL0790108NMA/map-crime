@@ -36,7 +36,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=150, blank=True)
-    organization = models.CharField(max_length=255, blank=True, default=None, null=True)  # noqa: DJ001 - null para diferenciar sem organização
+    organization = models.CharField(max_length=255, blank=True, null=True)  # noqa: DJ001 - null para diferenciar sem organização
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_social_account = models.BooleanField(default=False)
