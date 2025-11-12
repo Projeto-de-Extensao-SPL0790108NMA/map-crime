@@ -21,19 +21,43 @@ export interface AuthContext {
 
 const AuthContext = React.createContext<AuthContext | null>(null);
 
-const key = 'tanstack.auth.user';
+const userKey = 'tanstack.auth.user';
+const accessTokenKey = 'tanstack.auth.access_token';
+const refreshTokenKey = 'tanstack.auth.refresh_token';
 
 function getStoredUser() {
-  const user = localStorage.getItem(key);
+  const user = localStorage.getItem(userKey);
   return user ? JSON.parse(user) : null;
 }
 
 export function setStoredUser(user: AuthenticatedUser | null) {
   if (user) {
-    localStorage.setItem(key, JSON.stringify(user));
+    localStorage.setItem(userKey, JSON.stringify(user));
   } else {
-    localStorage.removeItem(key);
+    localStorage.removeItem(userKey);
   }
+}
+
+export function setStoredTokens(accessToken: string | null, refreshToken: string | null) {
+  if (accessToken) {
+    localStorage.setItem(accessTokenKey, accessToken);
+  } else {
+    localStorage.removeItem(accessTokenKey);
+  }
+  
+  if (refreshToken) {
+    localStorage.setItem(refreshTokenKey, refreshToken);
+  } else {
+    localStorage.removeItem(refreshTokenKey);
+  }
+}
+
+export function getAccessToken() {
+  return localStorage.getItem(accessTokenKey);
+}
+
+export function getRefreshToken() {
+  return localStorage.getItem(refreshTokenKey);
 }
 
 export function Provider({ children }: { children: React.ReactNode }) {
@@ -43,25 +67,21 @@ export function Provider({ children }: { children: React.ReactNode }) {
   const isAuthenticated = !!user;
 
   const logout = React.useCallback(() => {
-    api.post(
-      '/auth/sign-out',
-      {},
-      {
-        withCredentials: true,
-      },
-    );
+    if (isAuthenticated) {
+      api.post('/accounts/logout/').catch(() => {});
+    }
+    
     setStoredUser(null);
+    setStoredTokens(null, null);
     setUser(null);
   }, []);
 
   const login = React.useCallback(async (credentials: Credentials) => {
-    const { data } = await api.post(
-      '/auth/sign-in/email',
-      {
-        ...credentials,
-      },
-      { withCredentials: true },
-    );
+    const { data } = await api.post('/auth/token/', credentials, {
+      headers: { 'X-Without-Auth': 'true' },
+    });
+    
+    setStoredTokens(data.access, data.refresh);
     setStoredUser(data.user);
     setUser(data.user);
   }, []);
