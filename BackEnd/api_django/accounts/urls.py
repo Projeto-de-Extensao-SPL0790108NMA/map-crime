@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .views.auth.current_user import CurrentUserView
 from .views.auth.enable_2fa import Enable2FAView, Verify2FAView
 from .views.auth.google_login import GoogleLoginView
 from .views.auth.logout import LogoutView
@@ -16,6 +17,7 @@ urlpatterns = [
     path('token/refresh/', DocumentedTokenRefreshView.as_view(), name='token_refresh'),
     path('token/google/', GoogleLoginView.as_view(), name='google_login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('me/', CurrentUserView.as_view(), name='current_user'),
     path('password/reset/', PasswordResetRequestView.as_view(), name='password_reset'),
     path('password/reset/confirm/<str:uid>/<str:token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('2fa/enable/', Enable2FAView.as_view(), name='enable_2fa'),
