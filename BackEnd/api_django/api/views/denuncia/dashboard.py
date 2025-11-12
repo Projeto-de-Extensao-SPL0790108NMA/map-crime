@@ -14,7 +14,6 @@ from rest_framework.views import APIView
 from accounts.permissions.groups import IsAdmin, IsUser
 from api.choice import StatusChoices
 from api.models import Denuncia
-from api.serializers.user.detail import UserDetailSerializer
 
 User = get_user_model()
 
