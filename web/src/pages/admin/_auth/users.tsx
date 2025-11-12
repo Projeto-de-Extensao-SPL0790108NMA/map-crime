@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Loader2, Pencil, SearchIcon, Trash2 } from 'lucide-react';
+import { Loader2, Pencil, SearchIcon, Trash2, UserCircle, UserRoundPlus, UserRoundX } from 'lucide-react';
 
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -148,9 +148,12 @@ function Users() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            { user.status === 'active' ?  (
+                              <UserRoundX className="w-4 h-4 text-red-600" />
+                            ): (
+                              <UserRoundPlus className="w-4 h-4 text-green-600" />
+                            )}
                           </Button>
                         </div>
                       </div>
